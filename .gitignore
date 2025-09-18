@@ -20,6 +20,8 @@
 # production
 /build
 
+# Ignore HTML files
+*.html
 # misc
 .DS_Store
 *.pem
