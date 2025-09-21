@@ -31,10 +31,12 @@ export default function ContactPage() {
         <div className="container">
           <div className="row gutter-y-30">
             <div className="col-md-4">
-              <h3 className="xc-contact-one__title">Need a direct line?</h3>
+              <h3 className="xc-contact-one__title">Get in Touch</h3>
               <p className="xc-contact-one__info">
-                Cras massa et odio donec faucibus in. Vitae pretium massa dolor
-                ullamcorper lectus elit quam.
+                Contact eTus Media Solutions for professional media equipment
+                inquiries, technical support, or business partnerships.
+                We&apos;re here to help you find the perfect equipment for your
+                creative projects.
               </p>
               <div className="xc-contact-one__cta">
                 <div className="xc-contact-one__icon">
@@ -44,7 +46,7 @@ export default function ContactPage() {
                 </div>
                 <div className="xc-contact-one__ct">
                   <h4 className="xc-contact-one__head">Phone</h4>
-                  <a href="tel:(123)4567890">(123) 456 7890</a>
+                  <a href="tel:+252637002225">+(252) 637002225</a>
                 </div>
               </div>
               <div className="xc-contact-one__cta">
@@ -55,9 +57,22 @@ export default function ContactPage() {
                 </div>
                 <div className="xc-contact-one__ct">
                   <h4 className="xc-contact-one__head">Email</h4>
-                  <a href="mailto:contact@thimpress.com">
-                    contact@thimpress.com
-                  </a>
+                  <a href="mailto:nfo@etus.com">nfo@etus.com</a>
+                </div>
+              </div>
+              <div className="xc-contact-one__cta">
+                <div className="xc-contact-one__icon">
+                  <span>
+                    <i className="icon-location" />
+                  </span>
+                </div>
+                <div className="xc-contact-one__ct">
+                  <h4 className="xc-contact-one__head">Address</h4>
+                  <address>
+                    Cimaratu Khayr Building
+                    <br />
+                    Hargeisa, Somaliland
+                  </address>
                 </div>
               </div>
             </div>

@@ -46,33 +46,35 @@ export default function AboutPage() {
               <div className="xc-about-one__right">
                 <div className="xc-about-one__heading">
                   <span className="xc-about-one__subtitle">discover US </span>
-                  <h3 className="xc-about-one__title">
-                    Enjoy shopping with us & get discount{" "}
-                  </h3>
+                  <h3 className="xc-about-one__title">About eTus </h3>
                   <p className="xc-about-one__info">
-                    Lorem ipsum dolor sit amet, consectetuer adipiscing elit.
-                    Aenean commodo ligula eget dolor.
+                    eTus is a Media Solutions leading provider of professional
+                    media equipment, offering high-quality cameras, audio gear,
+                    lighting, broadcasting tools, and accessories. We cater to
+                    filmmakers, content creators, production studios, and
+                    broadcasters, ensuring they have the best technology to
+                    bring their creative visions to life.
                   </p>
                 </div>
                 <ul className="xc-about-one__checklist">
                   <li>
                     <i className="fas fa-check-circle" />
-                    Maecenas nec odio et ante tincidunt tempus. Donec vitae
-                    sapien ut libero venenatis faucibus
+                    Professional-grade cameras, lenses, and accessories for all
+                    production needs
                   </li>
                   <li>
                     <i className="fas fa-check-circle" />
-                    Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel
-                    augue.
+                    High-quality audio equipment and recording solutions for
+                    crystal-clear sound
                   </li>
                   <li>
                     <i className="fas fa-check-circle" />
-                    Donec sodales sagittis magna. Sed consequat, leo eget
-                    bibendum sodales, augue velit cursus
+                    Professional lighting systems and studio equipment for
+                    perfect illumination
                   </li>
                 </ul>
                 <Link href="/shop" className="swiftcart-btn text-uppercase">
-                  Shopping now
+                  Explore Equipment
                 </Link>
               </div>
             </div>
@@ -80,8 +82,58 @@ export default function AboutPage() {
         </div>
       </div>
       {/* about one end */}
+      {/* vision mission start */}
+      <div className="xc-vision-mission pt-80 pb-80">
+        <div className="container">
+          <div className="row gutter-y-30">
+            <div className="col-12">
+              {/* <div className="xc-sec-heading text-center mb-50">
+                <h3 className="xc-sec-heading__title">
+                  <span>
+                    <i className="icon-eye" />
+                  </span>
+                  Our Vision & Mission
+                </h3>
+              </div> */}
+            </div>
+          </div>
+          <div className="row gutter-y-30 align-items-center">
+            <div className="col-lg-6">
+              <div className="xc-vision-mission__item">
+                <div className="xc-vision-mission__icon">
+                  <i className="fas fa-eye" />
+                </div>
+                <div className="xc-vision-mission__content">
+                  <h4 className="xc-vision-mission__title">Our Vision</h4>
+                  <p className="xc-vision-mission__text">
+                    To be the most trusted provider of media production
+                    equipment, empowering creators and professionals with
+                    innovative technology and exceptional service.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="col-lg-6">
+              <div className="xc-vision-mission__item">
+                <div className="xc-vision-mission__icon">
+                  <i className="fas fa-rocket" />
+                </div>
+                <div className="xc-vision-mission__content">
+                  <h4 className="xc-vision-mission__title">Our Mission</h4>
+                  <p className="xc-vision-mission__text">
+                    To equip media professionals and content creators with the
+                    highest quality tools and technology to enhance their
+                    creativity and storytelling.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      {/* vision mission end */}
       {/* counter start  */}
-      <div className="xc-counter-one base-bg pt-60 pb-60">
+      {/* <div className="xc-counter-one base-bg pt-60 pb-60">
         <div className="container">
           <div className="row gutter-y-30">
             <div className="col-lg-3 col-sm-6">
@@ -144,10 +196,10 @@ export default function AboutPage() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
       {/* counter end  */}
       {/* testimonil start  */}
-      <div className="xc-testimonial-three pt-80 pb-80">
+      {/* <div className="xc-testimonial-three pt-80 pb-80">
         <div className="container">
           <div className="row">
             <div className="col-12">
@@ -243,10 +295,10 @@ export default function AboutPage() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
       {/* testimonil end  */}
       {/* ads start */}
-      <div className="xc-ads-one">
+      {/* <div className="xc-ads-one">
         <div className="container">
           <div className="row">
             <div className="col-12">
@@ -258,10 +310,10 @@ export default function AboutPage() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
       {/* ads end */}
       {/* seller one start  */}
-      <div className="xc-brand-one pt-80 pb-80">
+      {/* <div className="xc-brand-one pt-80 pb-80">
         <div className="container">
           <div className="xc-sec-heading xc-has-btn">
             <h3 className="xc-sec-heading__title">
@@ -377,7 +429,7 @@ export default function AboutPage() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
       {/* seller one end  */}
     </>
   );

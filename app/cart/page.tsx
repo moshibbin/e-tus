@@ -1,7 +1,74 @@
+"use client";
 import Link from "next/link";
 import Header2 from "../components/Header2";
+import { useCart } from "../context/cart";
 
 export default function CartPage() {
+  const { items, removeFromCart, addToCart, getCartTotal, clearCart } =
+    useCart();
+
+  const updateQuantity = (productId: number, newQuantity: number) => {
+    const product = items.find((item: { id: number }) => item.id === productId);
+    if (!product) return;
+
+    if (newQuantity <= 0) {
+      removeFromCart(productId);
+    } else {
+      // Remove the item and re-add with new quantity
+      removeFromCart(productId);
+      for (let i = 0; i < newQuantity; i++) {
+        addToCart(product);
+      }
+    }
+  };
+
+  if (items.length === 0) {
+    return (
+      <>
+        <Header2 />
+        {/* xc-breadcrumb area start */}
+        <div className="xc-breadcrumb__area base-bg">
+          <div className="xc-breadcrumb__bg w-img xc-breadcrumb__overlay" />
+          <div className="container">
+            <div className="row">
+              <div className="col-xxl-12">
+                <div className="xc-breadcrumb__content p-relative z-index-1">
+                  <div className="xc-breadcrumb__list">
+                    <span>
+                      <Link href="/">Home</Link>
+                    </span>
+                    <span className="dvdr">
+                      <i className="icon-arrow-right" />
+                    </span>
+                    <span>Shopping Cart</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        {/* xc-breadcrumb area end */}
+        <div className="xc-cart-page pt-80 pb-80">
+          <div className="container">
+            <div className="row">
+              <div className="col-12">
+                <div className="text-center py-5">
+                  <h2>Your cart is empty</h2>
+                  <p className="mb-4">
+                    Add some products to your cart to get started.
+                  </p>
+                  <Link href="/shop" className="btn btn-primary">
+                    Continue Shopping
+                  </Link>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
       <Header2 />
@@ -45,120 +112,65 @@ export default function CartPage() {
                       </tr>
                     </thead>
                     <tbody>
-                      <tr>
-                        <td className="product-thumbnail">
-                          <Link href="/product-details">
-                            <img src="/assets/img/cart/cart-1.png" alt="" />
-                          </Link>
-                        </td>
-                        <td className="product-name">
-                          <Link href="/product-details">
-                            Level Bolt Smart Lock
-                          </Link>
-                        </td>
-                        <td className="product-price">
-                          <span className="amount">$130.00</span>
-                        </td>
-                        <td className="product-quantity">
-                          <div className="xc-product-quantity mt-10 mb-10">
-                            <span className="xc-cart-minus sub">
-                              <i className="fas fa-minus" />
+                      {items.map((item: any) => (
+                        <tr key={item.id}>
+                          <td className="product-thumbnail">
+                            <Link href={`/shop/${item.id}`}>
+                              <img src={item.image} alt={item.name} />
+                            </Link>
+                          </td>
+                          <td className="product-name">
+                            <Link href={`/shop/${item.id}`}>{item.name}</Link>
+                          </td>
+                          <td className="product-price">
+                            <span className="amount">${item.price}</span>
+                          </td>
+                          <td className="product-quantity">
+                            <div className="xc-product-quantity mt-10 mb-10">
+                              <button
+                                className="xc-cart-minus sub"
+                                onClick={() =>
+                                  updateQuantity(item.id, item.quantity - 1)
+                                }
+                              >
+                                <i className="fas fa-minus" />
+                              </button>
+                              <input
+                                className="xc-cart-input"
+                                type="text"
+                                value={item.quantity}
+                                onChange={(e) =>
+                                  updateQuantity(
+                                    item.id,
+                                    parseInt(e.target.value) || 0
+                                  )
+                                }
+                              />
+                              <button
+                                className="xc-cart-plus add"
+                                onClick={() =>
+                                  updateQuantity(item.id, item.quantity + 1)
+                                }
+                              >
+                                <i className="fas fa-plus" />
+                              </button>
+                            </div>
+                          </td>
+                          <td className="product-subtotal">
+                            <span className="amount">
+                              ${(item.price * item.quantity).toFixed(2)}
                             </span>
-                            <input
-                              className="xc-cart-input"
-                              type="text"
-                              defaultValue="1"
-                            />
-                            <span className="xc-cart-plus add">
-                              <i className="fas fa-plus" />
-                            </span>
-                          </div>
-                        </td>
-                        <td className="product-subtotal">
-                          <span className="amount">$130.00</span>
-                        </td>
-                        <td className="product-remove">
-                          <button type="submit">
-                            <i className="fa fa-times" />
-                          </button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="product-thumbnail">
-                          <Link href="/product-details">
-                            <img src="/assets/img/cart/cart-2.png" alt="" />
-                          </Link>
-                        </td>
-                        <td className="product-name">
-                          <Link href="/product-details">
-                            Level Bolt Smart Lock
-                          </Link>
-                        </td>
-                        <td className="product-price">
-                          <span className="amount">$130.00</span>
-                        </td>
-                        <td className="product-quantity">
-                          <div className="xc-product-quantity mt-10 mb-10">
-                            <span className="xc-cart-minus sub">
-                              <i className="fas fa-minus" />
-                            </span>
-                            <input
-                              className="xc-cart-input"
-                              type="text"
-                              defaultValue="1"
-                            />
-                            <span className="xc-cart-plus add">
-                              <i className="fas fa-plus" />
-                            </span>
-                          </div>
-                        </td>
-                        <td className="product-subtotal">
-                          <span className="amount">$130.00</span>
-                        </td>
-                        <td className="product-remove">
-                          <button type="submit">
-                            <i className="fa fa-times" />
-                          </button>
-                        </td>
-                      </tr>
-                      <tr>
-                        <td className="product-thumbnail">
-                          <Link href="/product-details">
-                            <img src="/assets/img/cart/cart-3.png" alt="" />
-                          </Link>
-                        </td>
-                        <td className="product-name">
-                          <Link href="/product-details">
-                            Level Bolt Smart Lock
-                          </Link>
-                        </td>
-                        <td className="product-price">
-                          <span className="amount">$130.00</span>
-                        </td>
-                        <td className="product-quantity">
-                          <div className="xc-product-quantity mt-10 mb-10">
-                            <span className="xc-cart-minus sub">
-                              <i className="fas fa-minus" />
-                            </span>
-                            <input
-                              className="xc-cart-input"
-                              type="text"
-                              defaultValue="1"
-                            />
-                            <span className="xc-cart-plus add">
-                              <i className="fas fa-plus" />
-                            </span>
-                          </div>
-                        </td>
-                        <td className="product-subtotal">
-                          <span className="amount">$130.00</span>
-                        </td>
-                        <td className="product-remove">
-                          <button type="submit">
-                            <i className="fa fa-times" />
-                          </button>
-                        </td>
-                      </tr>
+                          </td>
+                          <td className="product-remove">
+                            <button
+                              type="button"
+                              onClick={() => removeFromCart(item.id)}
+                            >
+                              <i className="fa fa-times" />
+                            </button>
+                          </td>
+                        </tr>
+                      ))}
                     </tbody>
                   </table>
                 </div>
@@ -186,39 +198,23 @@ export default function CartPage() {
                         data-bs-parent="#shop_size"
                       >
                         <div className="accordion-body">
-                          <div className="cart-coupon-code">
-                            <input type="text" placeholder="Coupon Code" />
-                            <button>Apply</button>
-                          </div>
                           <div className="cart-subtitle">
                             <h4>Subtotal</h4>
-                            <h4>$4589</h4>
+                            <h4>${getCartTotal().toFixed(2)}</h4>
                           </div>
-                          <div className="cart-checkout">
-                            <h4>Shipping</h4>
-                            <div className="shop__widget-list">
-                              <div className="shop__widget-list-item-2">
-                                <input type="radio" name="pay" id="c-rate" />
-                                <label htmlFor="c-rate">Flat rate</label>
-                              </div>
-                              <div className="shop__widget-list-item-2 has-orange">
-                                <input type="radio" name="pay" id="c-Free" />
-                                <label htmlFor="c-Free">Free shipping</label>
-                              </div>
-                              <div className="shop__widget-list-item-2 has-green">
-                                <input type="radio" name="pay" id="c-pickup" />
-                                <label htmlFor="c-pickup">Local pickup</label>
-                              </div>
-                            </div>
-                          </div>
+
                           <div className="cart-totails">
-                            <h4>Subtotal</h4>
-                            <h4>$4589</h4>
+                            <h4>Total</h4>
+                            <h4>
+                              $
+                              {(
+                                getCartTotal() + (getCartTotal() > 100 ? 0 : 10)
+                              ).toFixed(2)}
+                            </h4>
                           </div>
                           <p>
-                            Wetters, as opposed to using Content here, content
-                            here, making it look like readable English. Many
-                            desktop
+                            Free shipping on orders. Secure checkout and fast
+                            delivery. Thank you for shopping with e-tus!
                           </p>
                           <Link className="cart-checkout-btn" href="/checkout">
                             Checkout

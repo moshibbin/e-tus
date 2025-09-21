@@ -1,8 +1,125 @@
-
+"use client";
 import Link from "next/link";
+import { useEffect, useState } from "react";
 import Header2 from "../components/Header2";
+import { useCart } from "../context/cart";
+import { products } from "../data/products";
 
 export default function ShopPage() {
+  const { addToCart } = useCart();
+  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
+  const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
+  const [selectedPriceRange, setSelectedPriceRange] = useState("");
+  const [sortBy, setSortBy] = useState("default");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [cartMessage, setCartMessage] = useState("");
+  const itemsPerPage = 12;
+
+  // Get unique values for filters
+  const allBrands = Array.from(
+    new Set(products.map((p) => p.brand).filter(Boolean))
+  );
+
+  // Filter products
+  let filteredProducts = products.filter((product) => {
+    const matchesCategory =
+      selectedCategories.length === 0 ||
+      selectedCategories.some((cat) => product.categories.includes(cat));
+
+    const matchesBrand =
+      selectedBrands.length === 0 || selectedBrands.includes(product.brand);
+
+    const matchesSize =
+      selectedSizes.length === 0 || selectedSizes.includes(product.size);
+
+    const matchesPrice =
+      selectedPriceRange === "" ||
+      (selectedPriceRange === "under50" && product.price < 50) ||
+      (selectedPriceRange === "50-100" &&
+        product.price >= 50 &&
+        product.price <= 100) ||
+      (selectedPriceRange === "100-200" &&
+        product.price >= 100 &&
+        product.price <= 200) ||
+      (selectedPriceRange === "200-500" &&
+        product.price >= 200 &&
+        product.price <= 500) ||
+      (selectedPriceRange === "500-1000" &&
+        product.price >= 500 &&
+        product.price <= 1000) ||
+      (selectedPriceRange === "1000plus" && product.price > 1000);
+
+    return matchesCategory && matchesBrand && matchesSize && matchesPrice;
+  });
+
+  // Sort products
+  filteredProducts = [...filteredProducts].sort((a, b) => {
+    switch (sortBy) {
+      case "priceLow":
+        return a.price - b.price;
+      case "priceHigh":
+        return b.price - a.price;
+      case "name":
+        return a.name.localeCompare(b.name);
+      case "rating":
+        return b.rating - a.rating;
+      default:
+        return 0;
+    }
+  });
+
+  // Pagination
+  const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
+  const paginatedProducts = filteredProducts.slice(
+    (currentPage - 1) * itemsPerPage,
+    currentPage * itemsPerPage
+  );
+  const totalProducts = filteredProducts.length;
+  const startIndex = (currentPage - 1) * itemsPerPage + 1;
+  const endIndex = Math.min(currentPage * itemsPerPage, totalProducts);
+
+  // Reset to first page when filters change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [
+    selectedCategories,
+    selectedBrands,
+    selectedSizes,
+    selectedPriceRange,
+    sortBy,
+  ]);
+
+  // Handle brand filter change
+  const handleBrandChange = (brand: string, checked: boolean) => {
+    if (checked) {
+      setSelectedBrands([...selectedBrands, brand]);
+    } else {
+      setSelectedBrands(selectedBrands.filter((b) => b !== brand));
+    }
+  };
+
+  // Handle sort change
+  const handleSortChange = (sort: string) => {
+    setSortBy(sort);
+  };
+
+  // Generate pagination numbers
+  const getPaginationNumbers = () => {
+    const numbers = [];
+    const maxVisible = 5;
+    let start = Math.max(1, currentPage - Math.floor(maxVisible / 2));
+    const end = Math.min(totalPages, start + maxVisible - 1);
+
+    if (end - start + 1 < maxVisible) {
+      start = Math.max(1, end - maxVisible + 1);
+    }
+
+    for (let i = start; i <= end; i++) {
+      numbers.push(i);
+    }
+    return numbers;
+  };
   return (
     <>
       <Header2 />
@@ -31,11 +148,25 @@ export default function ShopPage() {
       {/* shop area start */}
       <section className="xc-shop-area pt-80 pb-80">
         <div className="container">
+          {cartMessage && (
+            <div
+              className="alert alert-success alert-dismissible fade show mb-4"
+              role="alert"
+            >
+              <i className="icon-check-circle me-2"></i>
+              {cartMessage}
+              <button
+                type="button"
+                className="btn-close"
+                onClick={() => setCartMessage("")}
+              ></button>
+            </div>
+          )}
           <div className="row">
             <div className="col-xl-3 col-lg-4">
               <div className="shop__sidebar on-left">
                 <div className="shop__widget xc-accordion">
-                  <div className="accordion" id="shop_category">
+                  {/* <div className="accordion" id="shop_category">
                     <div className="accordion-item">
                       <h2 className="accordion-header" id="category__widget">
                         <button
@@ -60,36 +191,46 @@ export default function ShopPage() {
                             <div className="shop__widget-list-item">
                               <input
                                 type="checkbox"
-                                id="all"
-                                defaultChecked
+                                id="all-categories"
+                                checked={selectedCategories.length === 0}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setSelectedCategories([]);
+                                  }
+                                }}
                               />
-                              <label htmlFor="all">All</label>
+                              <label htmlFor="all-categories">
+                                All Categories
+                              </label>
                             </div>
-                            <div className="shop__widget-list-item">
-                              <input
-                                type="checkbox"
-                                id="man"
-                                defaultChecked
-                              />
-                              <label htmlFor="man">Man</label>
-                            </div>
-                            <div className="shop__widget-list-item">
-                              <input type="checkbox" id="women" />
-                              <label htmlFor="women">Women</label>
-                            </div>
-                            <div className="shop__widget-list-item">
-                              <input type="checkbox" id="child" />
-                              <label htmlFor="child">Child</label>
-                            </div>
-                            <div className="shop__widget-list-item">
-                              <input type="checkbox" id="tshirt" />
-                              <label htmlFor="tshirt">T-shirt</label>
-                            </div>
+                            {allCategories.map((category) => (
+                              <div
+                                key={category}
+                                className="shop__widget-list-item"
+                              >
+                                <input
+                                  type="checkbox"
+                                  id={`cat-${category}`}
+                                  checked={selectedCategories.includes(
+                                    category
+                                  )}
+                                  onChange={(e) =>
+                                    handleCategoryChange(
+                                      category,
+                                      e.target.checked
+                                    )
+                                  }
+                                />
+                                <label htmlFor={`cat-${category}`}>
+                                  {category}
+                                </label>
+                              </div>
+                            ))}
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                 </div>
                 <div className="shop__widget xc-accordion">
                   <div className="accordion" id="shop_brand">
@@ -115,34 +256,51 @@ export default function ShopPage() {
                         <div className="accordion-body">
                           <div className="shop__widget-list">
                             <div className="shop__widget-list-item">
-                              <input type="checkbox" id="iphone_12" />
-                              <label htmlFor="iphone_12">Rich Man</label>
-                            </div>
-                            <div className="shop__widget-list-item">
-                              <input type="checkbox" id="iphone_12_pro" />
-                              <label htmlFor="iphone_12_pro">Doji Bari</label>
-                            </div>
-                            <div className="shop__widget-list-item">
-                              <input type="checkbox" id="iphone_11_pro" />
-                              <label htmlFor="iphone_11_pro">
-                                Polo Cotton
-                              </label>
-                            </div>
-                            <div className="shop__widget-list-item">
                               <input
                                 type="checkbox"
-                                id="samsung"
-                                defaultChecked
+                                id="all-brands"
+                                checked={selectedBrands.length === 0}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setSelectedBrands([]);
+                                  }
+                                }}
                               />
-                              <label htmlFor="samsung">Easy</label>
+                              <label
+                                htmlFor="all-brands"
+                                style={{ padding: "0 1rem" }}
+                              >
+                                All Brands
+                              </label>
                             </div>
+                            {allBrands.map((brand) => (
+                              <div
+                                key={brand}
+                                className="shop__widget-list-item"
+                              >
+                                <input
+                                  type="checkbox"
+                                  id={`brand-${brand}`}
+                                  checked={selectedBrands.includes(brand)}
+                                  onChange={(e) =>
+                                    handleBrandChange(brand, e.target.checked)
+                                  }
+                                />
+                                <label
+                                  style={{ padding: "0 1rem" }}
+                                  htmlFor={`brand-${brand}`}
+                                >
+                                  {brand}
+                                </label>
+                              </div>
+                            ))}
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
                 </div>
-                <div className="shop__widget xc-accordion">
+                {/* <div className="shop__widget xc-accordion">
                   <div className="accordion" id="shop_size">
                     <div className="accordion-item">
                       <h2 className="accordion-header" id="size__widget">
@@ -168,42 +326,39 @@ export default function ShopPage() {
                             <div className="shop__widget-list-item-2">
                               <input
                                 type="checkbox"
-                                id="c-black"
-                                defaultChecked
+                                id="all-sizes"
+                                checked={selectedSizes.length === 0}
+                                onChange={(e) => {
+                                  if (e.target.checked) {
+                                    setSelectedSizes([]);
+                                  }
+                                }}
                               />
-                              <label htmlFor="c-black">S</label>
+                              <label htmlFor="all-sizes">All Sizes</label>
                             </div>
-                            <div className="shop__widget-list-item-2 has-orange">
-                              <input type="checkbox" id="c-orange" />
-                              <label htmlFor="c-orange">M</label>
-                            </div>
-                            <div className="shop__widget-list-item-2 has-green">
-                              <input type="checkbox" id="c-green" />
-                              <label htmlFor="c-green">L</label>
-                            </div>
-                            <div className="shop__widget-list-item-2 has-red">
-                              <input
-                                type="checkbox"
-                                id="c-red"
-                                defaultChecked
-                              />
-                              <label htmlFor="c-red">Xl</label>
-                            </div>
-                            <div className="shop__widget-list-item-2 has-yellow">
-                              <input type="checkbox" id="c-XXL" />
-                              <label htmlFor="c-XXL">XXL</label>
-                            </div>
-                            <div className="shop__widget-list-item-2 has-yellow">
-                              <input type="checkbox" id="c-XXXL" />
-                              <label htmlFor="c-XXXL">XXXL</label>
-                            </div>
+                            {allSizes.map((size) => (
+                              <div
+                                key={size}
+                                className="shop__widget-list-item-2"
+                              >
+                                <input
+                                  type="checkbox"
+                                  id={`size-${size}`}
+                                  checked={selectedSizes.includes(size)}
+                                  onChange={(e) =>
+                                    handleSizeChange(size, e.target.checked)
+                                  }
+                                />
+                                <label htmlFor={`size-${size}`}>{size}</label>
+                              </div>
+                            ))}
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                <div className="shop__widget xc-accordion">
+                </div> */}
+                {/* <div className="shop__widget xc-accordion">
                   <div className="accordion" id="shop_range">
                     <div className="accordion-item">
                       <h2 className="accordion-header" id="range__widget">
@@ -241,17 +396,9 @@ export default function ShopPage() {
                               />
                             </div>
                             <div className="ranger-min-max-block">
-                              <input
-                                type="text"
-                                readOnly
-                                className="min"
-                              />
+                              <input type="text" readOnly className="min" />
                               <span>-</span>
-                              <input
-                                type="text"
-                                readOnly
-                                className="max"
-                              />
+                              <input type="text" readOnly className="max" />
                               <input type="submit" defaultValue="Filter" />
                             </div>
                           </div>
@@ -259,8 +406,8 @@ export default function ShopPage() {
                       </div>
                     </div>
                   </div>
-                </div>
-                <div className="shop__widget xc-accordion">
+                </div> */}
+                {/* <div className="shop__widget xc-accordion">
                   <div className="accordion" id="shop_price">
                     <div className="accordion-item">
                       <h2 className="accordion-header" id="price__widget">
@@ -284,33 +431,93 @@ export default function ShopPage() {
                         <div className="accordion-body">
                           <div className="shop__widget-list">
                             <div className="shop__widget-list-item">
-                              <input type="checkbox" id="higher" />
-                              <label htmlFor="higher">$10.00 - $49.00</label>
+                              <input
+                                type="radio"
+                                id="all-prices"
+                                name="price-range"
+                                checked={selectedPriceRange === ""}
+                                onChange={() => handlePriceRangeChange("")}
+                              />
+                              <label htmlFor="all-prices">All Prices</label>
                             </div>
                             <div className="shop__widget-list-item">
                               <input
-                                type="checkbox"
-                                id="high"
-                                defaultChecked
+                                type="radio"
+                                id="under50"
+                                name="price-range"
+                                checked={selectedPriceRange === "under50"}
+                                onChange={() =>
+                                  handlePriceRangeChange("under50")
+                                }
                               />
-                              <label htmlFor="high">$50.00 - $99.00</label>
+                              <label htmlFor="under50">Under $50</label>
                             </div>
                             <div className="shop__widget-list-item">
-                              <input type="checkbox" id="medium" />
-                              <label htmlFor="medium">
-                                $100.00 - $199.00
-                              </label>
+                              <input
+                                type="radio"
+                                id="50-100"
+                                name="price-range"
+                                checked={selectedPriceRange === "50-100"}
+                                onChange={() =>
+                                  handlePriceRangeChange("50-100")
+                                }
+                              />
+                              <label htmlFor="50-100">$50 - $100</label>
                             </div>
                             <div className="shop__widget-list-item">
-                              <input type="checkbox" id="low" />
-                              <label htmlFor="low">$200.00 +</label>
+                              <input
+                                type="radio"
+                                id="100-200"
+                                name="price-range"
+                                checked={selectedPriceRange === "100-200"}
+                                onChange={() =>
+                                  handlePriceRangeChange("100-200")
+                                }
+                              />
+                              <label htmlFor="100-200">$100 - $200</label>
+                            </div>
+                            <div className="shop__widget-list-item">
+                              <input
+                                type="radio"
+                                id="200-500"
+                                name="price-range"
+                                checked={selectedPriceRange === "200-500"}
+                                onChange={() =>
+                                  handlePriceRangeChange("200-500")
+                                }
+                              />
+                              <label htmlFor="200-500">$200 - $500</label>
+                            </div>
+                            <div className="shop__widget-list-item">
+                              <input
+                                type="radio"
+                                id="500-1000"
+                                name="price-range"
+                                checked={selectedPriceRange === "500-1000"}
+                                onChange={() =>
+                                  handlePriceRangeChange("500-1000")
+                                }
+                              />
+                              <label htmlFor="500-1000">$500 - $1000</label>
+                            </div>
+                            <div className="shop__widget-list-item">
+                              <input
+                                type="radio"
+                                id="1000plus"
+                                name="price-range"
+                                checked={selectedPriceRange === "1000plus"}
+                                onChange={() =>
+                                  handlePriceRangeChange("1000plus")
+                                }
+                              />
+                              <label htmlFor="1000plus">$1000+</label>
                             </div>
                           </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
             <div className="col-xl-9 col-lg-8">
@@ -320,19 +527,29 @@ export default function ShopPage() {
                     <div className="col-md-6">
                       <div className="xc-shop-top-left d-flex align-items-center ">
                         <div className="xc-shop-top-result">
-                          <p>Showing 1–14 of 26 results</p>
+                          <p>
+                            Showing {startIndex}–{endIndex} of {totalProducts}{" "}
+                            results
+                          </p>
                         </div>
                       </div>
                     </div>
                     <div className="col-md-6">
                       <div className="xc-shop-top-right d-sm-flex align-items-center justify-content-md-end">
                         <div className="xc-shop-top-select">
-                          <select>
-                            <option>Default Sorting</option>
-                            <option>Low to Hight</option>
-                            <option>High to Low</option>
-                            <option>New Added</option>
-                            <option>On Sale</option>
+                          <select
+                            value={sortBy}
+                            onChange={(e) => handleSortChange(e.target.value)}
+                          >
+                            <option value="default">Default Sorting</option>
+                            <option value="name">Name (A-Z)</option>
+                            <option value="priceLow">
+                              Price (Low to High)
+                            </option>
+                            <option value="priceHigh">
+                              Price (High to Low)
+                            </option>
+                            <option value="rating">Rating</option>
                           </select>
                         </div>
                       </div>
@@ -341,440 +558,113 @@ export default function ShopPage() {
                 </div>
                 <div className="xc-shop-items-wrapper xc-shop-item-primary">
                   <div className="row gutter-y-20">
-                    <div className="col-xl-3 col-md-6 col-sm-6 infinite-item">
-                      <div className="xc-product-two__item">
-                        <div className="xc-product-two__img">
-                          <img
-                            src="/assets/img/products/f-product-1-1.png"
-                            alt="product"
-                          />
-                        </div>
-                        <div className="xc-product-two__ratting">
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          (125)
-                        </div>
-                        <h3 className="xc-product-two__title">
-                          <Link href="#">
-                            Basics High-Speed HDMI Cable 18 Gbps, 4K/6
-                          </Link>
-                        </h3>
-                        <h4 className="xc-product-two__price">$360</h4>
-                        <div className="xc-product-two__btn">
-                          <Link href="/product-details">
-                            <i className="icon-eye" />
-                          </Link>
-                          <Link href="/cart">
-                            <i className="icon-grocery-store" />
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-xl-3 col-md-6 col-sm-6 infinite-item">
-                      <div className="xc-product-two__item">
-                        <span className="xc-product-two__deal">
-                          BEST DEALS
-                        </span>
-                        <div className="xc-product-two__img">
-                          <img
-                            src="/assets/img/products/f-product-1-2.png"
-                            alt="product"
-                          />
-                        </div>
-                        <div className="xc-product-two__ratting">
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          (125)
-                        </div>
-                        <h3 className="xc-product-two__title">
-                          <Link href="#">
-                            Basics High-Speed HDMI Cable 18 Gbps, 4K/6
-                          </Link>
-                        </h3>
-                        <h4 className="xc-product-two__price">$360</h4>
-                        <div className="xc-product-two__btn">
-                          <Link href="/product-details">
-                            <i className="icon-eye" />
-                          </Link>
-                          <Link href="/cart">
-                            <i className="icon-grocery-store" />
-                          </Link>
+                    {paginatedProducts.map((product) => (
+                      <div
+                        key={product.id}
+                        className="col-xl-3 col-md-6 col-sm-6 infinite-item"
+                      >
+                        <div className="xc-product-two__item">
+                          {product.offer && (
+                            <span className="xc-product-two__deal">
+                              {product.offer}
+                            </span>
+                          )}
+                          <div className="xc-product-two__img">
+                            <img src={product.image} alt={product.name} />
+                          </div>
+                          <div className="xc-product-two__ratting">
+                            {[...Array(5)].map((_, i) => (
+                              <i
+                                key={i}
+                                className={`icon-star ${
+                                  i < Math.floor(product.rating)
+                                    ? ""
+                                    : "text-muted"
+                                }`}
+                              />
+                            ))}
+                            ({product.reviews})
+                          </div>
+                          <h3 className="xc-product-two__title">
+                            <Link href={`/shop/${product.id}`}>
+                              {product.name}
+                            </Link>
+                          </h3>
+                          <h4 className="xc-product-two__price">
+                            ${product.price}
+                            {product.oldPrice && (
+                              <span className="text-muted text-decoration-line-through ms-2">
+                                ${product.oldPrice}
+                              </span>
+                            )}
+                          </h4>
+                          <div className="xc-product-two__btn">
+                            <Link href={`/shop/${product.id}`}>
+                              <i className="icon-eye" />
+                            </Link>
+                            <Link href={"#"}>
+                              <button
+                                onClick={(e) => {
+                                  e.preventDefault();
+                                  addToCart(product);
+                                  setCartMessage(
+                                    `${product.name} added to cart!`
+                                  );
+                                  setTimeout(() => setCartMessage(""), 3000);
+                                }}
+                                title="Add to Cart"
+                              >
+                                <i className="icon-grocery-store" />
+                              </button>
+                            </Link>
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    <div className="col-xl-3 col-md-6 col-sm-6 infinite-item">
-                      <div className="xc-product-two__item">
-                        <span className="xc-product-two__deal">
-                          BEST DEALS
-                        </span>
-                        <div className="xc-product-two__img">
-                          <img
-                            src="/assets/img/products/f-product-1-3.png"
-                            alt="product"
-                          />
-                        </div>
-                        <div className="xc-product-two__ratting">
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          (125)
-                        </div>
-                        <h3 className="xc-product-two__title">
-                          <Link href="#">
-                            Basics High-Speed HDMI Cable 18 Gbps, 4K/6
-                          </Link>
-                        </h3>
-                        <h4 className="xc-product-two__price">$360</h4>
-                        <div className="xc-product-two__btn">
-                          <Link href="/product-details">
-                            <i className="icon-eye" />
-                          </Link>
-                          <Link href="/cart">
-                            <i className="icon-grocery-store" />
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-xl-3 col-md-6 col-sm-6 infinite-item">
-                      <div className="xc-product-two__item">
-                        <span className="xc-product-two__deal">
-                          BEST DEALS
-                        </span>
-                        <div className="xc-product-two__img">
-                          <img
-                            src="/assets/img/products/f-product-1-4.png"
-                            alt="product"
-                          />
-                        </div>
-                        <div className="xc-product-two__ratting">
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          (125)
-                        </div>
-                        <h3 className="xc-product-two__title">
-                          <Link href="#">
-                            Basics High-Speed HDMI Cable 18 Gbps, 4K/6
-                          </Link>
-                        </h3>
-                        <h4 className="xc-product-two__price">$360</h4>
-                        <div className="xc-product-two__btn">
-                          <Link href="/product-details">
-                            <i className="icon-eye" />
-                          </Link>
-                          <Link href="/cart">
-                            <i className="icon-grocery-store" />
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-xl-3 col-md-6 col-sm-6 infinite-item">
-                      <div className="xc-product-two__item">
-                        <span className="xc-product-two__deal">
-                          BEST DEALS
-                        </span>
-                        <div className="xc-product-two__img">
-                          <img
-                            src="/assets/img/products/f-product-1-5.png"
-                            alt="product"
-                          />
-                        </div>
-                        <div className="xc-product-two__ratting">
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          (125)
-                        </div>
-                        <h3 className="xc-product-two__title">
-                          <Link href="#">
-                            Basics High-Speed HDMI Cable 18 Gbps, 4K/6
-                          </Link>
-                        </h3>
-                        <h4 className="xc-product-two__price">$360</h4>
-                        <div className="xc-product-two__btn">
-                          <Link href="/product-details">
-                            <i className="icon-eye" />
-                          </Link>
-                          <Link href="/cart">
-                            <i className="icon-grocery-store" />
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-xl-3 col-md-6 col-sm-6 infinite-item">
-                      <div className="xc-product-two__item">
-                        <div className="xc-product-two__img">
-                          <img
-                            src="/assets/img/products/f-product-1-6.png"
-                            alt="product"
-                          />
-                        </div>
-                        <div className="xc-product-two__ratting">
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          (125)
-                        </div>
-                        <h3 className="xc-product-two__title">
-                          <Link href="#">
-                            Basics High-Speed HDMI Cable 18 Gbps, 4K/6
-                          </Link>
-                        </h3>
-                        <h4 className="xc-product-two__price">$360</h4>
-                        <div className="xc-product-two__btn">
-                          <Link href="/product-details">
-                            <i className="icon-eye" />
-                          </Link>
-                          <Link href="/cart">
-                            <i className="icon-grocery-store" />
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-xl-3 col-md-6 col-sm-6 infinite-item">
-                      <div className="xc-product-two__item">
-                        <span className="xc-product-two__deal">
-                          BEST DEALS
-                        </span>
-                        <div className="xc-product-two__img">
-                          <img
-                            src="/assets/img/products/f-product-1-7.png"
-                            alt="product"
-                          />
-                        </div>
-                        <div className="xc-product-two__ratting">
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          (125)
-                        </div>
-                        <h3 className="xc-product-two__title">
-                          <Link href="#">
-                            Basics High-Speed HDMI Cable 18 Gbps, 4K/6
-                          </Link>
-                        </h3>
-                        <h4 className="xc-product-two__price">$360</h4>
-                        <div className="xc-product-two__btn">
-                          <Link href="/product-details">
-                            <i className="icon-eye" />
-                          </Link>
-                          <Link href="/cart">
-                            <i className="icon-grocery-store" />
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-xl-3 col-md-6 col-sm-6 infinite-item">
-                      <div className="xc-product-two__item">
-                        <div className="xc-product-two__img">
-                          <img
-                            src="/assets/img/products/f-product-1-8.png"
-                            alt="product"
-                          />
-                        </div>
-                        <div className="xc-product-two__ratting">
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          (125)
-                        </div>
-                        <h3 className="xc-product-two__title">
-                          <Link href="#">
-                            Basics High-Speed HDMI Cable 18 Gbps, 4K/6
-                          </Link>
-                        </h3>
-                        <h4 className="xc-product-two__price">$360</h4>
-                        <div className="xc-product-two__btn">
-                          <Link href="/product-details">
-                            <i className="icon-eye" />
-                          </Link>
-                          <Link href="/cart">
-                            <i className="icon-grocery-store" />
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-xl-3 col-md-6 col-sm-6 infinite-item">
-                      <div className="xc-product-two__item">
-                        <span className="xc-product-two__deal">
-                          BEST DEALS
-                        </span>
-                        <div className="xc-product-two__img">
-                          <img
-                            src="/assets/img/products/f-product-1-9.png"
-                            alt="product"
-                          />
-                        </div>
-                        <div className="xc-product-two__ratting">
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          (125)
-                        </div>
-                        <h3 className="xc-product-two__title">
-                          <Link href="#">
-                            Basics High-Speed HDMI Cable 18 Gbps, 4K/6
-                          </Link>
-                        </h3>
-                        <h4 className="xc-product-two__price">$360</h4>
-                        <div className="xc-product-two__btn">
-                          <Link href="/product-details">
-                            <i className="icon-eye" />
-                          </Link>
-                          <Link href="/cart">
-                            <i className="icon-grocery-store" />
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-xl-3 col-md-6 col-sm-6 infinite-item">
-                      <div className="xc-product-two__item">
-                        <span className="xc-product-two__deal">
-                          BEST DEALS
-                        </span>
-                        <div className="xc-product-two__img">
-                          <img
-                            src="/assets/img/products/f-product-1-10.png"
-                            alt="product"
-                          />
-                        </div>
-                        <div className="xc-product-two__ratting">
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          (125)
-                        </div>
-                        <h3 className="xc-product-two__title">
-                          <Link href="#">
-                            Basics High-Speed HDMI Cable 18 Gbps, 4K/6
-                          </Link>
-                        </h3>
-                        <h4 className="xc-product-two__price">$360</h4>
-                        <div className="xc-product-two__btn">
-                          <Link href="/product-details">
-                            <i className="icon-eye" />
-                          </Link>
-                          <Link href="/cart">
-                            <i className="icon-grocery-store" />
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-xl-3 col-md-6 col-sm-6 infinite-item">
-                      <div className="xc-product-two__item">
-                        <div className="xc-product-two__img">
-                          <img
-                            src="/assets/img/products/f-product-1-11.png"
-                            alt="product"
-                          />
-                        </div>
-                        <div className="xc-product-two__ratting">
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          (125)
-                        </div>
-                        <h3 className="xc-product-two__title">
-                          <Link href="#">
-                            Basics High-Speed HDMI Cable 18 Gbps, 4K/6
-                          </Link>
-                        </h3>
-                        <h4 className="xc-product-two__price">$360</h4>
-                        <div className="xc-product-two__btn">
-                          <Link href="/product-details">
-                            <i className="icon-eye" />
-                          </Link>
-                          <Link href="/cart">
-                            <i className="icon-grocery-store" />
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="col-xl-3 col-md-6 col-sm-6 infinite-item">
-                      <div className="xc-product-two__item">
-                        <div className="xc-product-two__img">
-                          <img
-                            src="/assets/img/products/f-product-1-12.png"
-                            alt="product"
-                          />
-                        </div>
-                        <div className="xc-product-two__ratting">
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          <i className="icon-star" />
-                          (125)
-                        </div>
-                        <h3 className="xc-product-two__title">
-                          <Link href="#">
-                            Basics High-Speed HDMI Cable 18 Gbps, 4K/6
-                          </Link>
-                        </h3>
-                        <h4 className="xc-product-two__price">$360</h4>
-                        <div className="xc-product-two__btn">
-                          <Link href="/product-details">
-                            <i className="icon-eye" />
-                          </Link>
-                          <Link href="/cart">
-                            <i className="icon-grocery-store" />
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
+                    ))}
                   </div>
                 </div>
-                <div className="xc-shop-pagination mt-20">
-                  <div className="xc-pagination text-center">
-                    <ul>
-                      <li>
-                        <Link href="/blog" className="prev page-numbers">
-                          <i className="fa-solid fa-angle-left" />
-                        </Link>
-                      </li>
-                      <li>
-                        <Link className="current" href="/blog">
-                          1
-                        </Link>
-                      </li>
-                      <li>
-                        <span>2</span>
-                      </li>
-                      <li>
-                        <Link href="/blog">3</Link>
-                      </li>
-                      <li>
-                        <Link href="/blog" className="next page-numbers">
-                          <i className="fa-solid fa-angle-right" />
-                        </Link>
-                      </li>
-                    </ul>
+                {totalPages > 1 && (
+                  <div className="xc-shop-pagination mt-20">
+                    <div className="xc-pagination text-center">
+                      <ul>
+                        <li>
+                          <button
+                            className={`prev page-numbers ${
+                              currentPage === 1 ? "disabled" : ""
+                            }`}
+                            onClick={() => setCurrentPage(currentPage - 1)}
+                            disabled={currentPage === 1}
+                          >
+                            <i className="fa-solid fa-angle-left" />
+                          </button>
+                        </li>
+                        {getPaginationNumbers().map((number) => (
+                          <li key={number}>
+                            <button
+                              className={`page-numbers ${
+                                currentPage === number ? "current" : ""
+                              }`}
+                              onClick={() => setCurrentPage(number)}
+                            >
+                              {number}
+                            </button>
+                          </li>
+                        ))}
+                        <li>
+                          <button
+                            className={`next page-numbers ${
+                              currentPage === totalPages ? "disabled" : ""
+                            }`}
+                            onClick={() => setCurrentPage(currentPage + 1)}
+                            disabled={currentPage === totalPages}
+                          >
+                            <i className="fa-solid fa-angle-right" />
+                          </button>
+                        </li>
+                      </ul>
+                    </div>
                   </div>
-                </div>
+                )}
               </div>
             </div>
           </div>

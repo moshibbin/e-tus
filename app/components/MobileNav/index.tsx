@@ -1,42 +1,112 @@
+"use client";
+import { menuData } from "@/app/data/menu";
+import Link from "next/link";
+import { useEffect } from "react";
 
-import React from 'react';
+interface MobileNavProps {
+  isOpen: boolean;
+  onToggle: () => void;
+}
 
-const MobileNav = () => {
-    return (
-        <div className="xc-mobile-nav__wrapper">
-            <div className="xc-mobile-nav__overlay xc-close-toggler"></div>
-            {/* /.mobile-nav__overlay */}
-            <div className="xc-mobile-nav__content">
-                <a href="#" className="xc-mobile-nav__close xc-search-popup__close xc-close-toggler"></a>
-                <div className="logo-box">
-                    <a href="index.html"><img src="assets/img/logo/white-logo.png" width="150" alt="" /></a>
-                </div>
-                {/* /.logo-box */}
-                <div className="xc-mobile-nav__menu"></div>
-                {/* /.mobile-nav__container */}
+const MobileNav = ({ isOpen, onToggle }: MobileNavProps) => {
+  const closeMenu = () => {
+    onToggle();
+  };
 
-                <ul className="xc-mobile-nav__contact list-unstyled">
-                    <li>
-                        <i className="fa fa-envelope"></i>
-                        <a href="mailto:needhelp@swiftcart.com">needhelp@corpai.com</a>
-                    </li>
-                    <li>
-                        <i className="fa fa-phone-alt"></i>
-                        <a href="tel:666-888-0000">666 888 0000</a>
-                    </li>
-                </ul>{/* /.mobile-nav__contact */}
-                <div className="xc-mobile-nav__top">
-                    <div className="xc-mobile-nav__social">
-                        <a href="#" className="fab fa-twitter"></a>
-                        <a href="#" className="fab fa-facebook-square"></a>
-                        <a href="#" className="fab fa-pinterest-p"></a>
-                        <a href="#" className="fab fa-instagram"></a>
-                    </div>{/* /.mobile-nav__social */}
-                </div>{/* /.mobile-nav__top */}
+  useEffect(() => {
+    // Add event listeners for closing the menu
+    const handleCloseTogglers = () => {
+      closeMenu();
+    };
+
+    const closeTogglers = document.querySelectorAll(".xc-close-toggler");
+    closeTogglers.forEach((toggler) => {
+      toggler.addEventListener("click", handleCloseTogglers);
+    });
+
+    // Cleanup event listeners
+    return () => {
+      closeTogglers.forEach((toggler) => {
+        toggler.removeEventListener("click", handleCloseTogglers);
+      });
+    };
+  }, [closeMenu, isOpen]);
+
+  return (
+    <>
+      {/* Mobile Menu */}
+      <div className={`xc-mobile-nav__wrapper  ${isOpen ? "active" : ""}`}>
+        <div
+          className="xc-mobile-nav__overlay xc-close-toggler"
+          onClick={closeMenu}
+        ></div>
+        <div className="xc-mobile-nav__content">
+          <button
+            className="xc-mobile-nav__close xc-search-popup__close xc-close-toggler"
+            onClick={closeMenu}
+          >
+            <i className="icon-close"></i>
+          </button>
+          <div className="logo-box">
+            <Link href="/" onClick={closeMenu}>
+              <img
+                src="/assets/img/logo/white-logo.png"
+                width="150"
+                alt="eTus Camera Store"
+              />
+            </Link>
+          </div>
+
+          <div className="xc-mobile-nav__menu">
+            <nav className="xc-mobile-nav">
+              <ul className="xc-mobile-nav__list">
+                {menuData.map((item) => (
+                  <li
+                    key={item.id}
+                    className={item.children ? "has-submenu" : ""}
+                  >
+                    <Link href={item.route || "#"} onClick={closeMenu}>
+                      {item.label}
+                    </Link>
+                    {item.children && (
+                      <ul className="xc-mobile-nav__submenu">
+                        {item.children.map((child) => (
+                          <li key={child.id}>
+                            <Link href={child.route || "#"} onClick={closeMenu}>
+                              {child.label}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                ))}
+              </ul>
+            </nav>
+          </div>
+
+          <ul className="xc-mobile-nav__contact list-unstyled">
+            <li>
+              <i className="fa fa-envelope"></i>
+              <a href="mailto:info@etus.com">info@etus.com</a>
+            </li>
+            <li>
+              <i className="fa fa-phone-alt"></i>
+              <a href="tel:+252637002225">+(252) 637002225</a>
+            </li>
+          </ul>
+
+          <div className="xc-mobile-nav__top">
+            <div className="xc-mobile-nav__social">
+              <a href="https://facebook.com" className="fab fa-facebook-f"></a>
+              <a href="https://twitter.com" className="fab fa-x-twitter"></a>
+              <a href="https://instagram.com" className="fab fa-instagram"></a>
             </div>
-            {/* /.mobile-nav__content */}
+          </div>
         </div>
-    );
+      </div>
+    </>
+  );
 };
 
 export default MobileNav;

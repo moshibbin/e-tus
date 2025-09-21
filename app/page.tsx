@@ -1,19 +1,17 @@
+import Features from "./components/Features";
 import Header from "./components/Header";
 import MainSlider from "./components/MainSlider";
-import MobileNav from "./components/MobileNav";
-import Features from "./components/Features";
 
-import FeaturedProducts from "./components/FeaturedProducts";
 import Banners from "./components/Banners";
 import BestDeals from "./components/BestDeals";
-import Footer from "./components/Footer";
+import FeaturedProducts from "./components/FeaturedProducts";
 import PopularCategories from "./components/PopularCategories";
 
 export default function Home() {
   return (
     <div>
       <Header />
-      <MobileNav />
+      {/* <MobileNav /> */}
       <MainSlider />
       <Features />
       <PopularCategories />
