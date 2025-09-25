@@ -63,14 +63,14 @@ const MobileNav = ({ isOpen, onToggle }: MobileNavProps) => {
                 {menuData.map((item) => (
                   <li
                     key={item.id}
-                    className={item.children ? "has-submenu" : ""}
+                    className={item.submenu ? "has-submenu" : ""}
                   >
                     <Link href={item.route || "#"} onClick={closeMenu}>
                       {item.label}
                     </Link>
-                    {item.children && (
+                    {item.submenu && (
                       <ul className="xc-mobile-nav__submenu">
-                        {item.children.map((child) => (
+                        {item.submenu.map((child) => (
                           <li key={child.id}>
                             <Link href={child.route || "#"} onClick={closeMenu}>
                               {child.label}
