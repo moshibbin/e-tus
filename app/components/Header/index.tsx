@@ -47,13 +47,13 @@ const Header = () => {
         <div className="container">
           <div className="xc-header-two__wrapper">
             <div className="xc-header-two__logo">
-              <a href="index.html">
+              <Link href="/">
                 <img
                   src="assets/img/logo/white-logo-2.png"
                   alt="logo"
                   width="158"
                 />
-              </a>
+              </Link>
             </div>
             <div className="xc-header-two__right">
               <div className="xc-header-two__search d-none d-xl-block">
@@ -112,19 +112,19 @@ const Header = () => {
                     {menuData.map((item: MenuItem) => (
                       <li
                         key={item.id}
-                        className={item.children ? "has-dropdown" : undefined}
+                        className={item.submenu ? "has-dropdown" : undefined}
                       >
                         <Link href={item.route || "#"}>{item.label}</Link>
-                        {item.children && (
+                        {item.submenu && (
                           <ul className="submenu">
-                            {item.children.map((sub: MenuItem) =>
-                              sub.children ? (
+                            {item.submenu.map((sub: MenuItem) =>
+                              sub.submenu ? (
                                 <li key={sub.id} className="has-dropdown">
                                   <Link href={sub.route || "#"}>
                                     {sub.label}
                                   </Link>
                                   <ul className="submenu">
-                                    {sub.children.map((subsub: MenuItem) => (
+                                    {sub.submenu.map((subsub: MenuItem) => (
                                       <li key={subsub.id}>
                                         <Link href={subsub.route || "#"}>
                                           {subsub.label}
