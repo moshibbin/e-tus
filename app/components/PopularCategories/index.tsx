@@ -5,6 +5,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 // Import Swiper styles
 import "swiper/css";
 import "swiper/css/navigation";
+import Link from "next/link";
 
 const PopularCategories = () => {
   const categories = [
@@ -57,14 +58,16 @@ const PopularCategories = () => {
           >
             {categories.map((category, index) => (
               <SwiperSlide key={index}>
-                <div className="xc-category-one__item">
-                  <div className="xc-category-one__img">
-                    <img src={category.image} alt={category.name} />
+                <Link href="/shop">
+                  <div className="xc-category-one__item">
+                    <div className="xc-category-one__img">
+                      <img src={category.image} alt={category.name} />
+                    </div>
+                    <h3 className="xc-category-one__title">
+                      <Link href="/shop">{category.name}</Link>
+                    </h3>
                   </div>
-                  <h3 className="xc-category-one__title">
-                    <a href="#">{category.name}</a>
-                  </h3>
-                </div>
+                </Link>
               </SwiperSlide>
             ))}
           </Swiper>

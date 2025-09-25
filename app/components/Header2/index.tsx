@@ -13,13 +13,13 @@ const Header2 = () => {
         <div className="container">
           <div className="xc-header-two__wrapper">
             <div className="xc-header-two__logo">
-              <a href="index.html">
+              <Link href="/">
                 <img
                   src="/assets/img/logo/white-logo-2.png"
                   alt="logo"
                   width="158"
                 />
-              </a>
+              </Link>
             </div>
             <div className="xc-header-two__right">
               <div className="xc-header-two__search d-none d-xl-block">
@@ -37,12 +37,12 @@ const Header2 = () => {
                     <span className="xc-cart-count">{cartCount}</span>
                   )}
                 </Link>
-                <a href="#" className="xc-header-two__btn">
+                <a href="/wishlist" className="xc-header-two__btn">
                   <i className="icon-love"></i>
                 </a>
-                <a href="#" className="xc-header-two__btn">
+                {/* <a href="/profile" className="xc-header-two__btn">
                   <i className="icon-user-1"></i>
-                </a>
+                </a> */}
                 <div className="xc-header-two__hamburger d-xl-none">
                   <button
                     type="button"
@@ -117,12 +117,12 @@ const Header2 = () => {
             </div>
             <div className="xc-header-two__bottom-right">
               <div className="xc-header-two__cta">
-                <a href="#">
+                <Link href="/contact">
                   <i className="icon-support"></i>Customer Support
-                </a>
-                <a href="#">
+                </Link>
+                <Link href="/contact">
                   <i className="icon-info"></i>Need Help
-                </a>
+                </Link>
               </div>
             </div>
           </div>

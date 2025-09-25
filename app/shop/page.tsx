@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Header2 from "../components/Header2";
 import { useCart } from "../context/cart";
 import { products } from "../data/products";
+import { categories } from "../data/categories";
 
 export default function ShopPage() {
   const { addToCart } = useCart();
@@ -99,6 +100,15 @@ export default function ShopPage() {
     }
   };
 
+  // Handle category filter change
+  const handleCategoryChange = (category: string, checked: boolean) => {
+    if (checked) {
+      setSelectedCategories([...selectedCategories, category]);
+    } else {
+      setSelectedCategories(selectedCategories.filter((c) => c !== category));
+    }
+  };
+
   // Handle sort change
   const handleSortChange = (sort: string) => {
     setSortBy(sort);
@@ -166,7 +176,7 @@ export default function ShopPage() {
             <div className="col-xl-3 col-lg-4">
               <div className="shop__sidebar on-left">
                 <div className="shop__widget xc-accordion">
-                  {/* <div className="accordion" id="shop_category">
+                  <div className="accordion" id="shop_category">
                     <div className="accordion-item">
                       <h2 className="accordion-header" id="category__widget">
                         <button
@@ -199,30 +209,36 @@ export default function ShopPage() {
                                   }
                                 }}
                               />
-                              <label htmlFor="all-categories">
+                              <label
+                                htmlFor="all-categories"
+                                style={{ padding: "0 1rem" }}
+                              >
                                 All Categories
                               </label>
                             </div>
-                            {allCategories.map((category) => (
+                            {categories.map((category) => (
                               <div
-                                key={category}
+                                key={category.name}
                                 className="shop__widget-list-item"
                               >
                                 <input
                                   type="checkbox"
-                                  id={`cat-${category}`}
+                                  id={`cat-${category.name}`}
                                   checked={selectedCategories.includes(
-                                    category
+                                    category.name
                                   )}
                                   onChange={(e) =>
                                     handleCategoryChange(
-                                      category,
+                                      category.name,
                                       e.target.checked
                                     )
                                   }
                                 />
-                                <label htmlFor={`cat-${category}`}>
-                                  {category}
+                                <label
+                                  htmlFor={`cat-${category.name}`}
+                                  style={{ padding: "0 1rem" }}
+                                >
+                                  {category.name}
                                 </label>
                               </div>
                             ))}
@@ -230,7 +246,7 @@ export default function ShopPage() {
                         </div>
                       </div>
                     </div>
-                  </div> */}
+                  </div>
                 </div>
                 <div className="shop__widget xc-accordion">
                   <div className="accordion" id="shop_brand">

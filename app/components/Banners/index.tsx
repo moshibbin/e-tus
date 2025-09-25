@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 const Banners = () => {
   return (
     <div className="xc-banner-three pb-80">
@@ -21,9 +23,9 @@ const Banners = () => {
                     measurement.
                   </p>
                   <div className="xc-banner-three__btn">
-                    <a className="swiftcart-btn" href="shop.html">
+                    <Link className="swiftcart-btn" href="/shop">
                       Shop now <i className="icon-next"></i>
-                    </a>
+                    </Link>
                   </div>
                 </div>
               </div>
@@ -51,9 +53,9 @@ const Banners = () => {
                     unexpectedly.
                   </p>
                   <div className="xc-banner-three__btn">
-                    <a className="swiftcart-btn" href="shop.html">
+                    <Link className="swiftcart-btn" href="/shop">
                       Shop now <i className="icon-next"></i>
-                    </a>
+                    </Link>
                   </div>
                 </div>
               </div>

@@ -10,13 +10,13 @@ const Footer = () => {
               <div className="col-md-6 col-lg-6 col-xl-3">
                 <div className="xc-footer-one__widget xc-widget-col-1">
                   <div className="xc-footer-one__logo">
-                    <a href="index.html">
+                    <Link href="/">
                       <img
                         src="/assets/img/logo/white-logo.png"
                         alt="swiftcart"
                         width="180"
                       />
-                    </a>
+                    </Link>
                   </div>
                   <p className="xc-footer-one__about">
                     Cimaratu Khayr Building, Hargeisa, Somaliland
