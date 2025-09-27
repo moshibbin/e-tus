@@ -1,20 +1,23 @@
 "use client";
-import { useState } from "react";
+import { useState, use } from "react";
 import Link from "next/link";
-import Header2 from "../../components/Header2";
+import dynamic from "next/dynamic";
 import { products } from "../../data/products";
 import { useCart } from "../../context/cart";
+
+const Header2 = dynamic(() => import("../../components/Header2"), { ssr: false });
 
 export default function ProductDetailsPage({
   params,
 }: {
-  params: { id: string };
+  params: Promise<{ id: string }>;
 }) {
+  const resolvedParams = use(params);
   const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [cartMessage, setCartMessage] = useState("");
 
-  const product = products.find((p) => p.id === parseInt(params.id));
+  const product = products.find((p) => p.id === parseInt(resolvedParams.id));
 
   if (!product) {
     return <div>Product not found</div>;

@@ -1,9 +1,11 @@
 "use client";
 import Link from "next/link";
-import Header2 from "../components/Header2";
+import dynamic from "next/dynamic";
 import { useCart } from "../context/cart";
 
-export default function CartPage() {
+const Header2 = dynamic(() => import("../components/Header2"), { ssr: false });
+
+function CartPageContent() {
   const { items, removeFromCart, addToCart, getCartTotal, clearCart } =
     useCart();
 
@@ -231,4 +233,8 @@ export default function CartPage() {
       </div>
     </>
   );
+}
+
+export default function CartPage() {
+  return <CartPageContent />;
 }

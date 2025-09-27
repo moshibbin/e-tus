@@ -1,10 +1,12 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import Header2 from "../components/Header2";
+import dynamic from "next/dynamic";
 import { useCart } from "../context/cart";
 import { products } from "../data/products";
 import { categories } from "../data/categories";
+
+const Header2 = dynamic(() => import("../components/Header2"), { ssr: false });
 
 export default function ShopPage() {
   const { addToCart } = useCart();

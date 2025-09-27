@@ -1,10 +1,16 @@
+"use client";
 import Link from "next/link";
-import Header2 from "../components/Header2";
+import dynamic from "next/dynamic";
+import ClientOnly from "../components/ClientOnly";
+
+const Header2 = dynamic(() => import("../components/Header2"), { ssr: false });
 
 export default function ContactPage() {
   return (
     <>
-      <Header2 />
+      <ClientOnly>
+        <Header2 />
+      </ClientOnly>
       {/* xc-breadcrumb area start */}
       <div className="xc-breadcrumb__area base-bg">
         <div className="xc-breadcrumb__bg w-img xc-breadcrumb__overlay" />

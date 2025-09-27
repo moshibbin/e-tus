@@ -1,8 +1,10 @@
 "use client";
 import { useState } from "react";
 import Link from "next/link";
-import Header2 from "../components/Header2";
+import dynamic from "next/dynamic";
 import { useCart } from "../context/cart";
+
+const Header2 = dynamic(() => import("../components/Header2"), { ssr: false });
 
 export default function CheckoutPage() {
   const { items, getCartTotal } = useCart();

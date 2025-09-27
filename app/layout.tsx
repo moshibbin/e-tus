@@ -1,9 +1,13 @@
-"use client";
+import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
-import Footer from "./components/Footer";
-import { CartProvider } from "./context/cart";
+import { Providers } from "./providers";
 import "./globals.css";
+
+export const metadata: Metadata = {
+  title: "eTus - Media Solutions",
+  description: "Professional media equipment for filmmakers and content creators",
+};
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -67,10 +71,7 @@ export default function RootLayout({
         <link rel="stylesheet" href="/assets/css/swiftcart.css" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <CartProvider>
-          {children}
-          <Footer />
-        </CartProvider>
+        <Providers>{children}</Providers>
         <Script
           src="/assets/vendors/jquery/jquery-3.7.0.min.js"
           strategy="beforeInteractive"
