@@ -37,9 +37,9 @@ const Header2 = () => {
                     <span className="xc-cart-count">{cartCount}</span>
                   )}
                 </Link>
-                <a href="/wishlist" className="xc-header-two__btn">
+                <Link href="/wishlist" className="xc-header-two__btn">
                   <i className="icon-love"></i>
-                </a>
+                </Link>
                 {/* <a href="/profile" className="xc-header-two__btn">
                   <i className="icon-user-1"></i>
                 </a> */}
@@ -103,7 +103,7 @@ const Header2 = () => {
                                 </li>
                               ) : (
                                 <li key={sub.label}>
-                                  <Link href={sub.href}>{sub.label}</Link>
+                                  <Link href={sub.route}>{sub.label}</Link>
                                 </li>
                               )
                             )}
