@@ -1,7 +1,25 @@
-import { products } from "@/app/data/products";
+"use client";
+import { useProducts, Product } from "@/app/hooks/useProducts";
 import Link from "next/link";
 
 const BestDeals = () => {
+  const { data: products, isLoading } = useProducts();
+
+  if (isLoading) {
+    return (
+      <div className="xc-product-six pb-80">
+        <div className="container">
+          <div className="text-center py-5">
+            <div className="spinner-border" role="status">
+              <span className="visually-hidden">Loading best deals...</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const bestDeals = products?.slice(0, 4) || [];
   return (
     <div className="xc-product-six pb-80">
       <div className="container">
@@ -33,27 +51,32 @@ const BestDeals = () => {
           </div>
         </div>
         <div className="row gutter-y-20">
-          {products.slice(0, 4).map((item) => (
+          {bestDeals.map((item: Product) => (
             <div className="col-md-6 col-lg-4 col-xl-3" key={item.id}>
               <div className="xc-product-six__item">
-                <span className="xc-product-six__offer">20%</span>
+                {item.offer && (
+                  <span className="xc-product-six__offer">{item.offer}</span>
+                )}
                 <div className="xc-product-six__img">
-                  <img src="assets/img/products/f-product-1-1.png" alt="" />
+                  <img src={item.image} alt={item.name} />
                 </div>
                 <h5 className="xc-product-six__price">
-                  <del>{item.price}</del>
-                  <span>$450</span>
+                  {item.oldPrice && <del>${item.oldPrice}</del>}
+                  <span>${item.price}</span>
                 </h5>
                 <h3 className="xc-product-six__title">
                   <Link href={`/shop/${item.id}`}>{item.name}</Link>
                 </h3>
                 <div className="xc-product-six__ratting">
-                  <i className="icon-star"></i>
-                  <i className="icon-star"></i>
-                  <i className="icon-star"></i>
-                  <i className="icon-star"></i>
-                  <i className="icon-star"></i>
-                  (25)
+                  {[...Array(5)].map((_, i) => (
+                    <i
+                      key={i}
+                      className={`icon-star ${
+                        i < Math.floor(item.rating || 0) ? "" : "text-muted"
+                      }`}
+                    />
+                  ))}
+                  ({item.reviews || 0})
                 </div>
               </div>
             </div>
