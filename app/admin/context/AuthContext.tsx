@@ -59,11 +59,11 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setIsLoading(true);
 
     // Simple authentication - in production, this would be an API call
-    if (username === "admin" && password === "admin123") {
+    if (username === "demo" && password === "demo123@@") {
       const userData: User = {
         id: "1",
-        username: "admin",
-        email: "admin@etus.com",
+        username: "demo",
+        email: "demo@etus.com",
       };
 
       setUser(userData);

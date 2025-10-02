@@ -108,9 +108,6 @@ const AdminLogin: React.FC = () => {
                 </form>
 
                 <div className="mt-3 text-center">
-                  <small className="text-muted">
-                    Default credentials: admin / admin123
-                  </small>
                 </div>
               </div>
             </div>
