@@ -16,37 +16,61 @@ interface CloudinaryConfig {
 
 // You'll need to add these to your environment variables
 const CLOUDINARY_CONFIG: CloudinaryConfig = {
-  cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'your-cloud-name',
-  uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'your-upload-preset',
+  cloudName: process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME || 'dheunnnct',
+  uploadPreset: process.env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET || 'e-tus-app',
 };
 
 export const uploadToCloudinary = async (
   file: File,
   folder: string = 'products'
 ): Promise<CloudinaryUploadResult> => {
+  // Validate configuration
+  if (CLOUDINARY_CONFIG.cloudName === 'your-cloud-name' || !CLOUDINARY_CONFIG.cloudName) {
+    throw new Error('Cloudinary cloud name is not configured. Please check your environment variables.');
+  }
+
+  if (CLOUDINARY_CONFIG.uploadPreset === 'your-upload-preset' || !CLOUDINARY_CONFIG.uploadPreset) {
+    throw new Error('Cloudinary upload preset is not configured. Please check your environment variables.');
+  }
+
+  console.log('Cloudinary Config:', {
+    cloudName: CLOUDINARY_CONFIG.cloudName,
+    uploadPreset: CLOUDINARY_CONFIG.uploadPreset
+  });
+
   const formData = new FormData();
   formData.append('file', file);
   formData.append('upload_preset', CLOUDINARY_CONFIG.uploadPreset);
   formData.append('folder', folder);
 
   try {
-    const response = await fetch(
-      `https://api.cloudinary.com/v1_1/${CLOUDINARY_CONFIG.cloudName}/image/upload`,
-      {
-        method: 'POST',
-        body: formData,
-      }
-    );
+    const uploadUrl = `https://api.cloudinary.com/v1_1/${CLOUDINARY_CONFIG.cloudName}/image/upload`;
+    console.log('Upload URL:', uploadUrl);
+
+    const response = await fetch(uploadUrl, {
+      method: 'POST',
+      body: formData,
+    });
 
     if (!response.ok) {
-      throw new Error(`Upload failed: ${response.statusText}`);
+      const errorText = await response.text();
+      console.error('Cloudinary error response:', errorText);
+
+      if (response.status === 400) {
+        throw new Error(`Upload failed: Invalid upload preset or configuration. Please check your Cloudinary settings. Error: ${errorText}`);
+      } else if (response.status === 401) {
+        throw new Error(`Upload failed: Authentication error. Please check your Cloudinary credentials.`);
+      } else {
+        throw new Error(`Upload failed: ${response.statusText} - ${errorText}`);
+      }
     }
 
     const result: CloudinaryUploadResult = await response.json();
+    console.log('Upload successful:', result.secure_url);
     return result;
   } catch (error) {
     console.error('Cloudinary upload error:', error);
-    throw new Error('Failed to upload image to Cloudinary');
+    throw error;
   }
 };
 

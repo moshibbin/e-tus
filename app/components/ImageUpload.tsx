@@ -60,7 +60,9 @@ const ImageUpload: React.FC<ImageUploadProps> = ({
       onImageUpload(result.secure_url);
       setPreviewImage(result.secure_url);
     } catch (error) {
-      setUploadError(error instanceof Error ? error.message : 'Upload failed');
+      const errorMessage = error instanceof Error ? error.message : 'Upload failed';
+      console.error('Image upload error:', errorMessage);
+      setUploadError(errorMessage);
       setPreviewImage(currentImage || null);
     } finally {
       setIsUploading(false);
