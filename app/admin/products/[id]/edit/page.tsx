@@ -14,9 +14,10 @@ const EditProduct: React.FC = () => {
   const params = useParams<{ id: string }>();
   const { data: Products } = useProducts();
   const updateProduct = useUpdateProduct();
-  const product = Products?.find((p) => p.id === parseInt(params.id));
+  const product = Products?.find((p) => p.id.toString() === params.id);
 
-  const [isInitialLoading, setIsInitialLoading] = useState(false);
+  const [isInitialLoading, setIsInitialLoading] = useState(true);
+  const [productNotFound, setProductNotFound] = useState(false);
 
   const {
     register,
@@ -31,30 +32,36 @@ const EditProduct: React.FC = () => {
   const watchedValues = useWatch({ control });
 
   useEffect(() => {
-    if (product) {
-      setIsInitialLoading(false);
-      reset({
-        name: product.name,
-        description: product.description,
-        price: product.price,
-        // categories: product.categories,
-        image: product.image,
-        stock: product.stock,
-      });
+    if (Products) {
+      const foundProduct = Products.find((p) => p.id.toString() === params.id);
+      if (foundProduct) {
+        setIsInitialLoading(false);
+        setProductNotFound(false);
+        reset({
+          name: foundProduct.name,
+          description: foundProduct.description,
+          price: foundProduct.price,
+          image: foundProduct.image,
+          stock: foundProduct.stock,
+        });
+      } else {
+        setIsInitialLoading(false);
+        setProductNotFound(true);
+      }
     }
-  }, [product, reset]);
+  }, [Products, params.id, reset]);
 
   const onSubmit: SubmitHandler<Product> = (data) => {
+    if (!product) return;
+
     updateProduct.mutate({
-      id: product?.id.toString()!,
+      id: product.id.toString(),
       data: {
         ...data,
-        // Remove id from data if not required, or ensure it's a number if required
-        id: product?.id!, // Ensure id is a number
-        categories: [],
-        images: product?.images ?? [],
-        thumbs: product?.thumbs ?? [],
-        tags: product?.tags ?? [],
+        categories: product.categories || [],
+        images: product.images ?? [],
+        thumbs: product.thumbs ?? [],
+        tags: product.tags ?? [],
       },
     });
     router.push("/admin/products");
@@ -77,6 +84,37 @@ const EditProduct: React.FC = () => {
       <div className="text-center py-4">
         <div className="spinner-border" role="status">
           <span className="visually-hidden">Loading...</span>
+        </div>
+      </div>
+    );
+  }
+
+  if (productNotFound) {
+    return (
+      <div className="edit-product">
+        <div className="d-flex justify-content-between align-items-center mb-4">
+          <h1>Edit eTus Product</h1>
+          <button
+            type="button"
+            className="btn btn-secondary"
+            onClick={() => router.back()}
+          >
+            <i className="fas fa-arrow-left me-2"></i>
+            Back to Products
+          </button>
+        </div>
+        <div className="alert alert-danger" role="alert">
+          <i className="fas fa-exclamation-triangle me-2"></i>
+          Product not found. The product you're trying to edit may have been deleted or doesn't exist.
+        </div>
+        <div className="text-center">
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={() => router.push("/admin/products")}
+          >
+            Back to Products
+          </button>
         </div>
       </div>
     );
@@ -283,7 +321,7 @@ const EditProduct: React.FC = () => {
                   </button>
                   <button type="submit" className="btn btn-primary">
                     <i className="fas fa-save me-2"></i>
-                    Create Product
+                    Update Product
                   </button>
                 </div>
               </form>
