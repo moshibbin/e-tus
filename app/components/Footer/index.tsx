@@ -71,11 +71,11 @@ const Footer = () => {
                 <div className="xc-footer-one__widget xc-widget-col-3">
                   <h3 className="xc-footer-one__widget-title">Top Category</h3>
                   <ul className="xc-footer-one__nav">
-                    <li>Cameras</li>
-                    <li>Mirrorless</li>
-                    <li>Professional</li>
-                    <li>DSLR</li>
-                    <li>Accessories</li>
+                    <li style={{ color: "white" }}>Cameras</li>
+                    <li style={{ color: "white" }}>Mirrorless</li>
+                    <li style={{ color: "white" }}>Professional</li>
+                    <li style={{ color: "white" }}>DSLR</li>
+                    <li style={{ color: "white" }}>Accessories</li>
                   </ul>
                 </div>
               </div>
