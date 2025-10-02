@@ -190,10 +190,14 @@ const CreateProduct: React.FC = () => {
                 </div>
 
                 <ImageUpload
-                  onImageUpload={(imageUrl) => setValue('image', imageUrl)}
-                  currentImage={watch('image')}
-                  label="Product Image"
+                  onImageUpload={(imageUrls) => {
+                    setValue('image', imageUrls[0] || '');
+                    setValue('images', imageUrls);
+                  }}
+                  currentImages={watch('images') || (watch('image') ? [watch('image')] : [])}
+                  label="Product Images"
                   required={true}
+                  maxImages={5}
                 />
                 {errors.image && (
                   <div className="text-danger mt-1">
