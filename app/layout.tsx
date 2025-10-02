@@ -2,11 +2,15 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import { Providers } from "./providers";
+import { AuthProvider } from "./admin/context/AuthContext";
+import { ProductsProvider } from "./admin/context/ProductsContext";
 import "./globals.css";
+import { QueryProvider } from "./utils/QueryProvider";
 
 export const metadata: Metadata = {
   title: "eTus - Media Solutions",
-  description: "Professional media equipment for filmmakers and content creators",
+  description:
+    "Professional media equipment for filmmakers and content creators",
 };
 
 const geistSans = Geist({
@@ -71,7 +75,14 @@ export default function RootLayout({
         <link rel="stylesheet" href="/assets/css/swiftcart.css" />
       </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
-        <Providers>{children}</Providers>
+        <Providers>
+          <AuthProvider>
+            <ProductsProvider>
+              {" "}
+              <QueryProvider>{children}</QueryProvider>
+            </ProductsProvider>
+          </AuthProvider>
+        </Providers>
         <Script
           src="/assets/vendors/jquery/jquery-3.7.0.min.js"
           strategy="beforeInteractive"
