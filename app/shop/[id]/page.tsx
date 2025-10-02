@@ -2,7 +2,7 @@
 import { useState, use } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { products } from "../../data/products";
+import { useProducts, Product } from "../../hooks/useProducts";
 import { useCart } from "../../context/cart";
 
 const Header2 = dynamic(() => import("../../components/Header2"), { ssr: false });
@@ -13,19 +13,52 @@ export default function ProductDetailsPage({
   params: Promise<{ id: string }>;
 }) {
   const resolvedParams = use(params);
+  const { data: products, isLoading } = useProducts();
   const { addToCart } = useCart();
   const [quantity, setQuantity] = useState(1);
   const [cartMessage, setCartMessage] = useState("");
 
-  const product = products.find((p) => p.id === parseInt(resolvedParams.id));
+  const product = products?.find((p: Product) => p.id.toString() === resolvedParams.id);
+
+  if (isLoading) {
+    return (
+      <>
+        <Header2 />
+        <div className="container pt-80 pb-80">
+          <div className="text-center py-5">
+            <div className="spinner-border" role="status">
+              <span className="visually-hidden">Loading product...</span>
+            </div>
+            <p className="mt-3">Loading product details...</p>
+          </div>
+        </div>
+      </>
+    );
+  }
 
   if (!product) {
-    return <div>Product not found</div>;
+    return (
+      <>
+        <Header2 />
+        <div className="container pt-80 pb-80">
+          <div className="alert alert-danger" role="alert">
+            <h4 className="alert-heading">Product Not Found</h4>
+            <p>The product you're looking for doesn't exist or may have been removed.</p>
+            <hr />
+            <p className="mb-0">
+              <Link href="/shop" className="btn btn-primary">
+                Back to Shop
+              </Link>
+            </p>
+          </div>
+        </div>
+      </>
+    );
   }
 
   const relatedProducts = products
-    .filter((p) => p.id !== product.id)
-    .slice(0, 4);
+    ?.filter((p: Product) => p.id !== product.id)
+    .slice(0, 4) || [];
 
   const getImage = (index: number) => product.images[index] || product.image;
   const getThumb = (index: number) => product.thumbs[index] || product.image;
@@ -39,7 +72,17 @@ export default function ProductDetailsPage({
 
   const handleAddToCart = () => {
     for (let i = 0; i < quantity; i++) {
-      addToCart(product);
+      addToCart({
+        ...product,
+        fullDescription: product.fullDescription || product.description,
+        rating: product.rating || 0,
+        reviews: product.reviews || 0,
+        sku: product.sku || `SKU-${product.id}`,
+        additionalInfo: product.additionalInfo?.map(item => ({
+          label: item.key,
+          value: item.value
+        })) || []
+      });
     }
     setCartMessage(`${product.name} added to cart!`);
     setTimeout(() => setCartMessage(""), 3000);
@@ -48,7 +91,17 @@ export default function ProductDetailsPage({
   const handleBuyNow = () => {
     // Add product to cart and redirect to checkout
     for (let i = 0; i < quantity; i++) {
-      addToCart(product);
+      addToCart({
+        ...product,
+        fullDescription: product.fullDescription || product.description,
+        rating: product.rating || 0,
+        reviews: product.reviews || 0,
+        sku: product.sku || `SKU-${product.id}`,
+        additionalInfo: product.additionalInfo?.map((item: { key: string; value: string }) => ({
+          label: item.key,
+          value: item.value
+        })) || []
+      });
     }
     window.location.href = "/checkout";
   };
@@ -280,7 +333,7 @@ export default function ProductDetailsPage({
                 </div>
                 <div className="product__details-categories product__details-more">
                   <p>Categories:</p>
-                  {product.categories.map((cat, index) => (
+                  {product.categories.map((cat: string, index: number) => (
                     <span key={index}>
                       <a href="#">
                         {cat}
@@ -291,11 +344,11 @@ export default function ProductDetailsPage({
                 </div>
                 <div className="product__details-tags">
                   <span>Tags:</span>
-                  {product.tags.map((tag, index) => (
+                  {product.tags?.map((tag: string, index: number) => (
                     <a key={index} href="#">
                       {tag}
                     </a>
-                  ))}
+                  )) || []}
                 </div>
                 <div className="product__details-share">
                   <span>Share:</span>
@@ -387,12 +440,12 @@ export default function ProductDetailsPage({
                       <div className="product__details-additional-inner">
                         <table>
                           <tbody>
-                            {product.additionalInfo.map((info, index) => (
+                            {product.additionalInfo?.map((info: { label: string; value: string }, index: number) => (
                               <tr key={index}>
                                 <th scope="row">{info.label}:</th>
                                 <td>{info.value}</td>
                               </tr>
-                            ))}
+                            )) || []}
                           </tbody>
                         </table>
                       </div>
@@ -409,15 +462,17 @@ export default function ProductDetailsPage({
         <div className="container">
           <h3 className="xc-section-title mb-30">Related products</h3>
           <div className="row gutter-y-30">
-            {relatedProducts.map((relProduct) => (
+            {relatedProducts.map((relProduct: Product) => (
               <div key={relProduct.id} className="col-xl-3 col-md-6">
                 <div className="xc-product-eight__item">
                   <div className="xc-product-eight__img">
                     <img
-                      src="/assets/img/products/f-product-1-1.png"
-                      alt="fas"
+                      src={relProduct.image}
+                      alt={relProduct.name}
                     />
-                    <span className="xc-product-eight__offer">30% off</span>
+                    {relProduct.offer && (
+                      <span className="xc-product-eight__offer">{relProduct.offer}</span>
+                    )}
                     <div className="xc-product-eight__icons">
                       <button className="xc-product-eight__action">
                         <i className="icon-love"></i>
@@ -441,12 +496,15 @@ export default function ProductDetailsPage({
                   </div>
                   <div className="xc-product-eight__content">
                     <div className="xc-product-eight__ratting">
-                      <i className="icon-star"></i>
-                      <i className="icon-star"></i>
-                      <i className="icon-star"></i>
-                      <i className="icon-star"></i>
-                      <i className="icon-star"></i>
-                      (25 Reviews)
+                      {[...Array(5)].map((_, i) => (
+                        <i
+                          key={i}
+                          className={`icon-star ${
+                            i < Math.floor(relProduct.rating || 0) ? "" : "text-muted"
+                          }`}
+                        />
+                      ))}
+                      ({relProduct.reviews || 0} Reviews)
                     </div>
                     <h3 className="xc-product-eight__title">
                       <Link href={`/shop/${relProduct.id}`}>
@@ -454,7 +512,8 @@ export default function ProductDetailsPage({
                       </Link>
                     </h3>
                     <h5 className="xc-product-eight__price">
-                      <del>$489</del> $289
+                      {relProduct.oldPrice && <del>${relProduct.oldPrice}</del>}
+                      <span>${relProduct.price}</span>
                     </h5>
                   </div>
                 </div>
