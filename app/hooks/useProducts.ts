@@ -21,7 +21,15 @@ export interface Product {
   brand?: string;
   size?: string;
   additionalInfo?: AdditionalInfoItem[];
-  // e.g. 4.5
+  // Shop display properties (optional)
+  rating?: number;
+  reviews?: number;
+  offer?: string;
+  oldPrice?: number;
+  sku?: string;
+  reviewsList?: any[];
+  overallRating?: number;
+  ratingDistribution?: { [key: number]: string };
 }
 export const useProductsBySites = () => {
   return useQuery<Product[], Error>({

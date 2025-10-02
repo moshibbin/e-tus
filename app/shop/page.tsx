@@ -3,13 +3,13 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import { useCart } from "../context/cart";
-import { products } from "../data/products";
-import { categories } from "../data/categories";
+import { useProducts, Product } from "../hooks/useProducts";
 
 const Header2 = dynamic(() => import("../components/Header2"), { ssr: false });
 
 export default function ShopPage() {
   const { addToCart } = useCart();
+  const { data: products, isLoading } = useProducts();
   const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [selectedSizes, setSelectedSizes] = useState<string[]>([]);
@@ -20,21 +20,26 @@ export default function ShopPage() {
   const itemsPerPage = 12;
 
   // Get unique values for filters
-  const allBrands = Array.from(
-    new Set(products.map((p) => p.brand).filter(Boolean))
+  const allBrands: string[] = Array.from(
+    new Set(products?.map((p) => p.brand).filter(Boolean) || [])
+  );
+
+  // Get unique categories from products
+  const allCategories: string[] = Array.from(
+    new Set(products?.flatMap((p) => p.categories || []).filter(Boolean) || [])
   );
 
   // Filter products
-  let filteredProducts = products.filter((product) => {
+  let filteredProducts: Product[] = (products || []).filter((product: Product) => {
     const matchesCategory =
       selectedCategories.length === 0 ||
-      selectedCategories.some((cat) => product.categories.includes(cat));
+      selectedCategories.some((cat) => (product.categories || []).includes(cat));
 
     const matchesBrand =
-      selectedBrands.length === 0 || selectedBrands.includes(product.brand);
+      selectedBrands.length === 0 || selectedBrands.includes(product.brand || "");
 
     const matchesSize =
-      selectedSizes.length === 0 || selectedSizes.includes(product.size);
+      selectedSizes.length === 0 || selectedSizes.includes(product.size || "");
 
     const matchesPrice =
       selectedPriceRange === "" ||
@@ -66,7 +71,7 @@ export default function ShopPage() {
       case "name":
         return a.name.localeCompare(b.name);
       case "rating":
-        return b.rating - a.rating;
+        return (b.rating || 0) - (a.rating || 0);
       default:
         return 0;
     }
@@ -160,21 +165,31 @@ export default function ShopPage() {
       {/* shop area start */}
       <section className="xc-shop-area pt-80 pb-80">
         <div className="container">
-          {cartMessage && (
-            <div
-              className="alert alert-success alert-dismissible fade show mb-4"
-              role="alert"
-            >
-              <i className="icon-check-circle me-2"></i>
-              {cartMessage}
-              <button
-                type="button"
-                className="btn-close"
-                onClick={() => setCartMessage("")}
-              ></button>
+          {isLoading && (
+            <div className="text-center py-5">
+              <div className="spinner-border" role="status">
+                <span className="visually-hidden">Loading products...</span>
+              </div>
+              <p className="mt-3">Loading products...</p>
             </div>
           )}
-          <div className="row">
+          {!isLoading && (
+            <>
+              {cartMessage && (
+                <div
+                  className="alert alert-success alert-dismissible fade show mb-4"
+                  role="alert"
+                >
+                  <i className="icon-check-circle me-2"></i>
+                  {cartMessage}
+                  <button
+                    type="button"
+                    className="btn-close"
+                    onClick={() => setCartMessage("")}
+                  ></button>
+                </div>
+              )}
+              <div className="row">
             <div className="col-xl-3 col-lg-4">
               <div className="shop__sidebar on-left">
                 <div className="shop__widget xc-accordion">
@@ -218,29 +233,29 @@ export default function ShopPage() {
                                 All Categories
                               </label>
                             </div>
-                            {categories.map((category) => (
+                            {allCategories.map((category) => (
                               <div
-                                key={category.name}
+                                key={category}
                                 className="shop__widget-list-item"
                               >
                                 <input
                                   type="checkbox"
-                                  id={`cat-${category.name}`}
+                                  id={`cat-${category}`}
                                   checked={selectedCategories.includes(
-                                    category.name
+                                    category
                                   )}
                                   onChange={(e) =>
                                     handleCategoryChange(
-                                      category.name,
+                                      category,
                                       e.target.checked
                                     )
                                   }
                                 />
                                 <label
-                                  htmlFor={`cat-${category.name}`}
+                                  htmlFor={`cat-${category}`}
                                   style={{ padding: "0 1rem" }}
                                 >
-                                  {category.name}
+                                  {category}
                                 </label>
                               </div>
                             ))}
@@ -595,13 +610,13 @@ export default function ShopPage() {
                               <i
                                 key={i}
                                 className={`icon-star ${
-                                  i < Math.floor(product.rating)
+                                  i < Math.floor(product.rating || 0)
                                     ? ""
                                     : "text-muted"
                                 }`}
                               />
                             ))}
-                            ({product.reviews})
+                            ({product.reviews || 0})
                           </div>
                           <h3 className="xc-product-two__title">
                             <Link href={`/shop/${product.id}`}>
@@ -623,13 +638,23 @@ export default function ShopPage() {
                             <Link href={"#"}>
                               <button
                                 onClick={(e) => {
-                                  e.preventDefault();
-                                  addToCart(product);
-                                  setCartMessage(
-                                    `${product.name} added to cart!`
-                                  );
-                                  setTimeout(() => setCartMessage(""), 3000);
-                                }}
+                                   e.preventDefault();
+                                   addToCart({
+                                     ...product,
+                                     fullDescription: product.fullDescription || product.description,
+                                     rating: product.rating || 0,
+                                     reviews: product.reviews || 0,
+                                     sku: product.sku || `SKU-${product.id}`,
+                                     additionalInfo: product.additionalInfo?.map(item => ({
+                                       label: item.key,
+                                       value: item.value
+                                     })) || []
+                                   });
+                                   setCartMessage(
+                                     `${product.name} added to cart!`
+                                   );
+                                   setTimeout(() => setCartMessage(""), 3000);
+                                 }}
                                 title="Add to Cart"
                               >
                                 <i className="icon-grocery-store" />
@@ -686,6 +711,8 @@ export default function ShopPage() {
               </div>
             </div>
           </div>
+            </>
+          )}
         </div>
       </section>
       {/* shop area end */}

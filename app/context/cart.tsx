@@ -9,25 +9,25 @@ interface Product {
   images: string[];
   thumbs: string[];
   description: string;
-  fullDescription: string;
-  rating: number;
-  reviews: number;
+  fullDescription?: string;
+  rating?: number;
+  reviews?: number;
   stock: number;
-  sku: string;
+  sku?: string;
   categories: string[];
-  tags: string[];
-  brand: string;
-  size: string;
-  additionalInfo: Array<{ label: string; value: string }>;
-  reviewsList: Array<{
+  tags?: string[];
+  brand?: string;
+  size?: string;
+  additionalInfo?: Array<{ label: string; value: string }>;
+  reviewsList?: Array<{
     name: string;
     avatar: string;
     rating: number;
     date: string;
     comment: string;
   }>;
-  overallRating: number;
-  ratingDistribution: Record<string, string>;
+  overallRating?: number;
+  ratingDistribution?: Record<string, string>;
   oldPrice?: number;
   offer?: string;
   quantity?: number;
