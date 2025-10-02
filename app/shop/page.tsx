@@ -21,7 +21,9 @@ export default function ShopPage() {
 
   // Get unique values for filters
   const allBrands: string[] = Array.from(
-    new Set(products?.map((p) => p.brand).filter(Boolean) || [])
+    new Set(
+      products?.map((p) => p.brand).filter((brand): brand is string => Boolean(brand)) || []
+    )
   );
 
   // Get unique categories from products
@@ -645,10 +647,7 @@ export default function ShopPage() {
                                      rating: product.rating || 0,
                                      reviews: product.reviews || 0,
                                      sku: product.sku || `SKU-${product.id}`,
-                                     additionalInfo: product.additionalInfo?.map(item => ({
-                                       label: item.key,
-                                       value: item.value
-                                     })) || []
+                                     additionalInfo: product.additionalInfo || []
                                    });
                                    setCartMessage(
                                      `${product.name} added to cart!`

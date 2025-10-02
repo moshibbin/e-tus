@@ -2,8 +2,6 @@
 
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
-import { useProducts } from "../../context/ProductsContext";
-import { ProductFormData, ProductFormErrors } from "../../types/Product";
 import { Product, useAddProduct } from "@/app/hooks/useProducts";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import ImageUpload from "@/app/components/ImageUpload";

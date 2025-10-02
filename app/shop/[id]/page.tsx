@@ -2,7 +2,7 @@
 import { useState, use } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { useProducts, Product } from "../../hooks/useProducts";
+import { useProducts, Product, AdditionalInfoItem } from "../../hooks/useProducts";
 import { useCart } from "../../context/cart";
 
 const Header2 = dynamic(() => import("../../components/Header2"), { ssr: false });
@@ -114,8 +114,8 @@ export default function ProductDetailsPage({
     return product.image;
   };
 
-  const renderStars = (rating: number) =>
-    Array.from({ length: rating }, (_, i) => (
+  const renderStars = (rating?: number) =>
+    Array.from({ length: rating || 0 }, (_, i) => (
       <span key={i}>
         <i className="icon-star"></i>
       </span>
@@ -129,10 +129,7 @@ export default function ProductDetailsPage({
         rating: product.rating || 0,
         reviews: product.reviews || 0,
         sku: product.sku || `SKU-${product.id}`,
-        additionalInfo: product.additionalInfo?.map((item: { key: string; value: string }) => ({
-          label: item.key,
-          value: item.value
-        })) || []
+        additionalInfo: product.additionalInfo || []
       });
     }
     setCartMessage(`${product.name} added to cart!`);
@@ -148,10 +145,7 @@ export default function ProductDetailsPage({
         rating: product.rating || 0,
         reviews: product.reviews || 0,
         sku: product.sku || `SKU-${product.id}`,
-        additionalInfo: product.additionalInfo?.map((item: { key: string; value: string }) => ({
-          label: item.key,
-          value: item.value
-        })) || []
+        additionalInfo: product.additionalInfo || []
       });
     }
     window.location.href = "/checkout";
@@ -301,7 +295,7 @@ export default function ProductDetailsPage({
                     {renderStars(product.rating)}
                   </div>
                   <div className="product__details-rating-count">
-                    <span>({product.reviews} customer reviews)</span>
+                    <span>({product.reviews || 0} customer reviews)</span>
                   </div>
                 </div>
 
@@ -491,9 +485,9 @@ export default function ProductDetailsPage({
                       <div className="product__details-additional-inner">
                         <table>
                           <tbody>
-                            {product.additionalInfo?.map((info: { label: string; value: string }, index: number) => (
+                            {product.additionalInfo?.map((info: AdditionalInfoItem, index: number) => (
                               <tr key={index}>
-                                <th scope="row">{info.label}:</th>
+                                <th scope="row">{info.key}:</th>
                                 <td>{info.value}</td>
                               </tr>
                             )) || []}

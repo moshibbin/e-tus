@@ -18,7 +18,7 @@ interface Product {
   tags?: string[];
   brand?: string;
   size?: string;
-  additionalInfo?: Array<{ label: string; value: string }>;
+  additionalInfo?: Array<{ key: string; value: string }>;
   reviewsList?: Array<{
     name: string;
     avatar: string;
