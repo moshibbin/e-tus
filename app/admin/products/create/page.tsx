@@ -21,8 +21,13 @@ const CreateProduct: React.FC = () => {
   } = useForm<Product>();
 
   const onSubmit: SubmitHandler<Product> = (data) => {
-    // console.log("Form Data:", data);
-    createProduct.mutate(data);
+    // Ensure images and thumbs arrays are populated with the main image
+    const productData = {
+      ...data,
+      images: data.images && data.images.length > 0 ? data.images : [data.image],
+      thumbs: data.thumbs && data.thumbs.length > 0 ? data.thumbs : [data.image],
+    };
+    createProduct.mutate(productData);
     router.push("/admin/products");
   };
 

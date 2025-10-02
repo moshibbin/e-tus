@@ -60,8 +60,59 @@ export default function ProductDetailsPage({
     ?.filter((p: Product) => p.id !== product.id)
     .slice(0, 4) || [];
 
-  const getImage = (index: number) => product.images[index] || product.image;
-  const getThumb = (index: number) => product.thumbs[index] || product.image;
+  const getImage = (index: number) => {
+    // Ensure product.image exists as fallback
+    if (!product.image) {
+      console.warn('Product missing main image:', product.id);
+      return '/assets/img/placeholder.png'; // Placeholder image
+    }
+
+    // First try to get from images array if it exists and has items
+    if (product.images && Array.isArray(product.images) && product.images.length > index) {
+      const image = product.images[index];
+      if (image && image.trim()) {
+        return image;
+      }
+    }
+
+    // Then try to get from thumbs array if it exists and has items
+    if (product.thumbs && Array.isArray(product.thumbs) && product.thumbs.length > index) {
+      const thumb = product.thumbs[index];
+      if (thumb && thumb.trim()) {
+        return thumb;
+      }
+    }
+
+    // Finally fall back to main product image
+    return product.image;
+  };
+
+  const getThumb = (index: number) => {
+    // Ensure product.image exists as fallback
+    if (!product.image) {
+      console.warn('Product missing main image:', product.id);
+      return '/assets/img/placeholder.png'; // Placeholder image
+    }
+
+    // First try to get from thumbs array if it exists and has items
+    if (product.thumbs && Array.isArray(product.thumbs) && product.thumbs.length > index) {
+      const thumb = product.thumbs[index];
+      if (thumb && thumb.trim()) {
+        return thumb;
+      }
+    }
+
+    // Then try to get from images array if it exists and has items
+    if (product.images && Array.isArray(product.images) && product.images.length > index) {
+      const image = product.images[index];
+      if (image && image.trim()) {
+        return image;
+      }
+    }
+
+    // Finally fall back to main product image
+    return product.image;
+  };
 
   const renderStars = (rating: number) =>
     Array.from({ length: rating }, (_, i) => (
@@ -78,7 +129,7 @@ export default function ProductDetailsPage({
         rating: product.rating || 0,
         reviews: product.reviews || 0,
         sku: product.sku || `SKU-${product.id}`,
-        additionalInfo: product.additionalInfo?.map(item => ({
+        additionalInfo: product.additionalInfo?.map((item: { key: string; value: string }) => ({
           label: item.key,
           value: item.value
         })) || []

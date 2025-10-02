@@ -45,6 +45,9 @@ const EditProduct: React.FC = () => {
           price: foundProduct.price,
           image: foundProduct.image,
           stock: foundProduct.stock,
+          // Ensure images and thumbs arrays are available for the form
+          images: foundProduct.images && foundProduct.images.length > 0 ? foundProduct.images : [foundProduct.image],
+          thumbs: foundProduct.thumbs && foundProduct.thumbs.length > 0 ? foundProduct.thumbs : [foundProduct.image],
         });
       } else {
         setIsInitialLoading(false);
@@ -61,8 +64,9 @@ const EditProduct: React.FC = () => {
       data: {
         ...data,
         categories: product.categories || [],
-        images: product.images ?? [],
-        thumbs: product.thumbs ?? [],
+        // Ensure images and thumbs arrays are populated with the main image
+        images: data.images && data.images.length > 0 ? data.images : [data.image],
+        thumbs: data.thumbs && data.thumbs.length > 0 ? data.thumbs : [data.image],
         tags: product.tags ?? [],
       },
     });
