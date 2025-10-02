@@ -3,7 +3,6 @@ import { Geist, Geist_Mono } from "next/font/google";
 import Script from "next/script";
 import { Providers } from "./providers";
 import { AuthProvider } from "./admin/context/AuthContext";
-import { ProductsProvider } from "./admin/context/ProductsContext";
 import "./globals.css";
 import { QueryProvider } from "./utils/QueryProvider";
 
@@ -77,10 +76,7 @@ export default function RootLayout({
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <Providers>
           <AuthProvider>
-            <ProductsProvider>
-              {" "}
-              <QueryProvider>{children}</QueryProvider>
-            </ProductsProvider>
+            <QueryProvider>{children}</QueryProvider>
           </AuthProvider>
         </Providers>
         <Script

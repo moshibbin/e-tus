@@ -1,5 +1,12 @@
 "use client";
 
+// NOTE: This ProductsContext is deprecated and replaced by Firebase integration
+// Keeping for reference but not actively used in the application
+// The admin now uses useProducts hook from @/app/hooks/useProducts for Firebase integration
+
+/*
+"use client";
+
 import React, {
   createContext,
   useContext,
@@ -155,9 +162,4 @@ export const ProductsProvider: React.FC<ProductsProviderProps> = ({
     getProduct,
   };
 
-  return (
-    <ProductsContext.Provider value={value}>
-      {children}
-    </ProductsContext.Provider>
-  );
-};
+*/
