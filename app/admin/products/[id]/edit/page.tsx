@@ -8,6 +8,7 @@ import {
   useProducts,
   useUpdateProduct,
 } from "@/app/hooks/useProducts";
+import ImageUpload from "@/app/components/ImageUpload";
 
 const EditProduct: React.FC = () => {
   const router = useRouter();
@@ -26,6 +27,7 @@ const EditProduct: React.FC = () => {
     formState: { errors },
     reset,
     watch,
+    setValue,
   } = useForm<Product>();
 
   // Watch form values for preview
@@ -268,48 +270,17 @@ const EditProduct: React.FC = () => {
                   </div>
                 </div>
 
-                <div className="mb-3">
-                  <label htmlFor="image" className="form-label">
-                    Image URL *
-                  </label>
-                  <input
-                    type="url"
-                    className={`form-control ${
-                      errors.image ? "is-invalid" : ""
-                    }`}
-                    id="image"
-                    {...register("image", {
-                      required: "Image URL is required",
-                    })}
-                    placeholder="https://example.com/image.jpg"
-                  />
-                  {errors.image && (
-                    <div className="invalid-feedback">
-                      {errors.image.message}
-                    </div>
-                  )}
-                  {/* Preview image if URL is present */}
-                  {/* <Controller
-            control={control}
-            name="image"
-            render={({ field }) =>
-              field.value ? (
-            <div className="mt-2">
-              <img
-                src={field.value}
-                alt="Preview"
-                style={{ maxWidth: "200px", maxHeight: "200px" }}
-                className="img-thumbnail"
-                onError={(e) => {
-              const target = e.target as HTMLImageElement;
-              target.style.display = "none";
-                }}
-              />
-            </div>
-              ) : null
-            }
-          /> */}
-                </div>
+                <ImageUpload
+                  onImageUpload={(imageUrl) => setValue('image', imageUrl)}
+                  currentImage={watch('image')}
+                  label="Product Image"
+                  required={true}
+                />
+                {errors.image && (
+                  <div className="text-danger mt-1">
+                    <small>{errors.image.message}</small>
+                  </div>
+                )}
 
                 <div className="d-grid gap-2 d-md-flex justify-content-md-end">
                   <button
