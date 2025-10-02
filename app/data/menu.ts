@@ -13,11 +13,7 @@ export const menuData: MenuItem[] = [
     label: "Home",
     route: "/",
   },
-  {
-    id: "about",
-    label: "About",
-    route: "/about",
-  },
+
   {
     id: "shop",
     label: "Shop",
@@ -32,8 +28,13 @@ export const menuData: MenuItem[] = [
     ],
   },
   {
+    id: "about",
+    label: "About",
+    route: "/about",
+  },
+  {
     id: "faq",
-    label: "Faq",
+    label: "FAQ",
     route: "/faq",
   },
   {

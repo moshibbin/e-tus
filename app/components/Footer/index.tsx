@@ -1,3 +1,4 @@
+import { menuData } from "@/app/data/menu";
 import Link from "next/link";
 
 const Footer = () => {
@@ -57,42 +58,33 @@ const Footer = () => {
                 <div className="xc-footer-one__widget xc-widget-col-2">
                   <h3 className="xc-footer-one__widget-title">Quick links</h3>
                   <ul className="xc-footer-one__nav">
-                    <li>
-                      <a href="about.html">About us</a>
-                    </li>
-                    <li>
-                      <a href="about.html">Our story</a>
-                    </li>
-                    <li>
-                      <a href="team.html">Our Team</a>
-                    </li>
-                    <li>
-                      <a href="blog-list.html">Latest News</a>
-                    </li>
-                    <li>
-                      <a href="blog-list.html">Privacy Policy</a>
-                    </li>
+                    {menuData.map((item) => (
+                      <li key={item.id}>
+                        <a href={item.route}>{item.label}</a>
+                      </li>
+                    ))}
                   </ul>
                 </div>
               </div>
+
               <div className="col-md-6 col-lg-3 col-xl-2">
                 <div className="xc-footer-one__widget xc-widget-col-3">
                   <h3 className="xc-footer-one__widget-title">Top Category</h3>
                   <ul className="xc-footer-one__nav">
                     <li>
-                      <a href="shop.html">Shop Product</a>
+                      <a href="/shop">Cameras</a>
                     </li>
                     <li>
-                      <a href="cart.html">Shoping Cart </a>
+                      <a href="/shop">Mirrorless</a>
                     </li>
                     <li>
-                      <a href="shop.html">Wishlist</a>
+                      <a href="/shop">Professional</a>
                     </li>
                     <li>
-                      <a href="about.html">Our story</a>
+                      <a href="/shop">DSLR</a>
                     </li>
                     <li>
-                      <a href="contact.html">Customer Help</a>
+                      <a href="/shop">Accessories</a>
                     </li>
                   </ul>
                 </div>

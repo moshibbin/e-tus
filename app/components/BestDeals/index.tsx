@@ -54,14 +54,19 @@ const BestDeals = () => {
           {bestDeals.map((item: Product) => (
             <div className="col-md-6 col-lg-4 col-xl-3" key={item.id}>
               <div className="xc-product-six__item">
-                {item.offer && (
-                  <span className="xc-product-six__offer">{item.offer}</span>
-                )}
-                <div className="xc-product-six__img">
-                  <img src={item.image} alt={item.name} />
-                </div>
+                <Link href={`/shop/${item.id}`}>
+                  <div
+                    className="xc-product-six__img"
+                    style={{ width: "100%" }}
+                  >
+                    <img
+                      src={item.image}
+                      alt={item.name}
+                      style={{ width: "100%" }}
+                    />
+                  </div>
+                </Link>
                 <h5 className="xc-product-six__price">
-                  {item.oldPrice && <del>${item.oldPrice}</del>}
                   <span>${item.price}</span>
                 </h5>
                 <h3 className="xc-product-six__title">
@@ -69,14 +74,8 @@ const BestDeals = () => {
                 </h3>
                 <div className="xc-product-six__ratting">
                   {[...Array(5)].map((_, i) => (
-                    <i
-                      key={i}
-                      className={`icon-star ${
-                        i < Math.floor(item.rating || 0) ? "" : "text-muted"
-                      }`}
-                    />
+                    <i key={i} className={`icon-star text-muted"`} />
                   ))}
-                  ({item.reviews || 0})
                 </div>
               </div>
             </div>

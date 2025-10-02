@@ -2,10 +2,16 @@
 import { useState, use } from "react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
-import { useProducts, Product, AdditionalInfoItem } from "../../hooks/useProducts";
+import {
+  useProducts,
+  Product,
+  AdditionalInfoItem,
+} from "../../hooks/useProducts";
 import { useCart } from "../../context/cart";
 
-const Header2 = dynamic(() => import("../../components/Header2"), { ssr: false });
+const Header2 = dynamic(() => import("../../components/Header2"), {
+  ssr: false,
+});
 
 export default function ProductDetailsPage({
   params,
@@ -18,7 +24,9 @@ export default function ProductDetailsPage({
   const [quantity, setQuantity] = useState(1);
   const [cartMessage, setCartMessage] = useState("");
 
-  const product = products?.find((p: Product) => p.id.toString() === resolvedParams.id);
+  const product = products?.find(
+    (p: Product) => p.id.toString() === resolvedParams.id
+  );
 
   if (isLoading) {
     return (
@@ -43,7 +51,10 @@ export default function ProductDetailsPage({
         <div className="container pt-80 pb-80">
           <div className="alert alert-danger" role="alert">
             <h4 className="alert-heading">Product Not Found</h4>
-            <p>The product you're looking for doesn't exist or may have been removed.</p>
+            <p>
+              The product you're looking for doesn't exist or may have been
+              removed.
+            </p>
             <hr />
             <p className="mb-0">
               <Link href="/shop" className="btn btn-primary">
@@ -56,19 +67,22 @@ export default function ProductDetailsPage({
     );
   }
 
-  const relatedProducts = products
-    ?.filter((p: Product) => p.id !== product.id)
-    .slice(0, 4) || [];
+  const relatedProducts =
+    products?.filter((p: Product) => p.id !== product.id).slice(0, 4) || [];
 
   const getImage = (index: number) => {
     // Ensure product.image exists as fallback
     if (!product.image) {
-      console.warn('Product missing main image:', product.id);
-      return '/assets/img/placeholder.png'; // Placeholder image
+      console.warn("Product missing main image:", product.id);
+      return "/assets/img/placeholder.png"; // Placeholder image
     }
 
     // First try to get from images array if it exists and has items
-    if (product.images && Array.isArray(product.images) && product.images.length > index) {
+    if (
+      product.images &&
+      Array.isArray(product.images) &&
+      product.images.length > index
+    ) {
       const image = product.images[index];
       if (image && image.trim()) {
         return image;
@@ -76,7 +90,11 @@ export default function ProductDetailsPage({
     }
 
     // Then try to get from thumbs array if it exists and has items
-    if (product.thumbs && Array.isArray(product.thumbs) && product.thumbs.length > index) {
+    if (
+      product.thumbs &&
+      Array.isArray(product.thumbs) &&
+      product.thumbs.length > index
+    ) {
       const thumb = product.thumbs[index];
       if (thumb && thumb.trim()) {
         return thumb;
@@ -90,12 +108,16 @@ export default function ProductDetailsPage({
   const getThumb = (index: number) => {
     // Ensure product.image exists as fallback
     if (!product.image) {
-      console.warn('Product missing main image:', product.id);
-      return '/assets/img/placeholder.png'; // Placeholder image
+      console.warn("Product missing main image:", product.id);
+      return "/assets/img/placeholder.png"; // Placeholder image
     }
 
     // First try to get from thumbs array if it exists and has items
-    if (product.thumbs && Array.isArray(product.thumbs) && product.thumbs.length > index) {
+    if (
+      product.thumbs &&
+      Array.isArray(product.thumbs) &&
+      product.thumbs.length > index
+    ) {
       const thumb = product.thumbs[index];
       if (thumb && thumb.trim()) {
         return thumb;
@@ -103,7 +125,11 @@ export default function ProductDetailsPage({
     }
 
     // Then try to get from images array if it exists and has items
-    if (product.images && Array.isArray(product.images) && product.images.length > index) {
+    if (
+      product.images &&
+      Array.isArray(product.images) &&
+      product.images.length > index
+    ) {
       const image = product.images[index];
       if (image && image.trim()) {
         return image;
@@ -126,10 +152,10 @@ export default function ProductDetailsPage({
       addToCart({
         ...product,
         fullDescription: product.fullDescription || product.description,
-        rating: product.rating || 0,
-        reviews: product.reviews || 0,
-        sku: product.sku || `SKU-${product.id}`,
-        additionalInfo: product.additionalInfo || []
+        rating: 0,
+        reviews: 0,
+        sku: `SKU-${product.id}`,
+        additionalInfo: product.additionalInfo || [],
       });
     }
     setCartMessage(`${product.name} added to cart!`);
@@ -142,10 +168,10 @@ export default function ProductDetailsPage({
       addToCart({
         ...product,
         fullDescription: product.fullDescription || product.description,
-        rating: product.rating || 0,
-        reviews: product.reviews || 0,
-        sku: product.sku || `SKU-${product.id}`,
-        additionalInfo: product.additionalInfo || []
+        rating: 0,
+        reviews: 0,
+        sku: `SKU-${product.id}`,
+        additionalInfo: product.additionalInfo || [],
       });
     }
     window.location.href = "/checkout";
@@ -292,29 +318,19 @@ export default function ProductDetailsPage({
 
                 <div className="product__details-rating d-flex align-items-center">
                   <div className="product__rating product__rating-2 d-flex">
-                    {renderStars(product.rating)}
+                    {/* {renderStars(product.rating)} */}
                   </div>
-                  <div className="product__details-rating-count">
+                  {/* <div className="product__details-rating-count">
                     <span>({product.reviews || 0} customer reviews)</span>
-                  </div>
+                  </div> */}
                 </div>
 
                 <p>{product.description}</p>
 
                 <div className="product__details-price">
-                  {product.oldPrice && (
-                    <span className="product__details-ammount old-ammount">
-                      ${product.oldPrice}.00
-                    </span>
-                  )}
                   <span className="product__details-ammount new-ammount">
                     ${product.price}.00
                   </span>
-                  {product.offer && (
-                    <span className="product__details-offer">
-                      {product.offer}
-                    </span>
-                  )}
                 </div>
 
                 <div className="product__details-quantity">
@@ -374,18 +390,18 @@ export default function ProductDetailsPage({
                 </div>
                 <div className="product__details-sku product__details-more">
                   <p>SKU:</p>
-                  <span>{product.sku}</span>
+                  <span>{product.id}</span>
                 </div>
                 <div className="product__details-categories product__details-more">
                   <p>Categories:</p>
-                  {product.categories.map((cat: string, index: number) => (
+                  {/* {product.categories?.map((cat: string, index: number) => (
                     <span key={index}>
                       <a href="#">
                         {cat}
                         {index < product.categories.length - 1 ? "," : ""}
                       </a>
                     </span>
-                  ))}
+                  ))} */}
                 </div>
                 <div className="product__details-tags">
                   <span>Tags:</span>
@@ -485,12 +501,14 @@ export default function ProductDetailsPage({
                       <div className="product__details-additional-inner">
                         <table>
                           <tbody>
-                            {product.additionalInfo?.map((info: AdditionalInfoItem, index: number) => (
-                              <tr key={index}>
-                                <th scope="row">{info.key}:</th>
-                                <td>{info.value}</td>
-                              </tr>
-                            )) || []}
+                            {product.additionalInfo?.map(
+                              (info: AdditionalInfoItem, index: number) => (
+                                <tr key={index}>
+                                  <th scope="row">{info.key}:</th>
+                                  <td>{info.value}</td>
+                                </tr>
+                              )
+                            ) || []}
                           </tbody>
                         </table>
                       </div>
@@ -511,13 +529,8 @@ export default function ProductDetailsPage({
               <div key={relProduct.id} className="col-xl-3 col-md-6">
                 <div className="xc-product-eight__item">
                   <div className="xc-product-eight__img">
-                    <img
-                      src={relProduct.image}
-                      alt={relProduct.name}
-                    />
-                    {relProduct.offer && (
-                      <span className="xc-product-eight__offer">{relProduct.offer}</span>
-                    )}
+                    <img src={relProduct.image} alt={relProduct.name} />
+
                     <div className="xc-product-eight__icons">
                       <button className="xc-product-eight__action">
                         <i className="icon-love"></i>
@@ -542,14 +555,8 @@ export default function ProductDetailsPage({
                   <div className="xc-product-eight__content">
                     <div className="xc-product-eight__ratting">
                       {[...Array(5)].map((_, i) => (
-                        <i
-                          key={i}
-                          className={`icon-star ${
-                            i < Math.floor(relProduct.rating || 0) ? "" : "text-muted"
-                          }`}
-                        />
+                        <i key={i} className={`icon-star text-muted" `} />
                       ))}
-                      ({relProduct.reviews || 0} Reviews)
                     </div>
                     <h3 className="xc-product-eight__title">
                       <Link href={`/shop/${relProduct.id}`}>
@@ -557,7 +564,6 @@ export default function ProductDetailsPage({
                       </Link>
                     </h3>
                     <h5 className="xc-product-eight__price">
-                      {relProduct.oldPrice && <del>${relProduct.oldPrice}</del>}
                       <span>${relProduct.price}</span>
                     </h5>
                   </div>
