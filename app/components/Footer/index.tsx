@@ -71,21 +71,11 @@ const Footer = () => {
                 <div className="xc-footer-one__widget xc-widget-col-3">
                   <h3 className="xc-footer-one__widget-title">Top Category</h3>
                   <ul className="xc-footer-one__nav">
-                    <li>
-                      <a href="/shop">Cameras</a>
-                    </li>
-                    <li>
-                      <a href="/shop">Mirrorless</a>
-                    </li>
-                    <li>
-                      <a href="/shop">Professional</a>
-                    </li>
-                    <li>
-                      <a href="/shop">DSLR</a>
-                    </li>
-                    <li>
-                      <a href="/shop">Accessories</a>
-                    </li>
+                    <li>Cameras</li>
+                    <li>Mirrorless</li>
+                    <li>Professional</li>
+                    <li>DSLR</li>
+                    <li>Accessories</li>
                   </ul>
                 </div>
               </div>
