@@ -9,6 +9,7 @@ import {
   useUpdateProduct,
 } from "@/app/hooks/useProducts";
 import ImageUpload from "@/app/components/ImageUpload";
+import { PRODUCT_CATEGORIES } from "@/app/utils/constants";
 
 const EditProduct: React.FC = () => {
   const router = useRouter();
@@ -82,17 +83,7 @@ const EditProduct: React.FC = () => {
     router.push("/admin/products");
   };
 
-  const categories = [
-    "Cameras",
-    "Audio",
-    "Lighting",
-    "Accessories",
-    "Lenses",
-    "Tripods",
-    "Batteries",
-    "Storage",
-    "Other",
-  ];
+  const categories = PRODUCT_CATEGORIES;
 
   if (isInitialLoading) {
     return (

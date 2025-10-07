@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { useCart } from "../context/cart";
 import { useProducts, Product } from "../hooks/useProducts";
 import { categories } from "../data/categories";
+import { PRODUCT_CATEGORIES } from "../utils/constants";
 
 const Header2 = dynamic(() => import("../components/Header2"), { ssr: false });
 
@@ -28,19 +29,29 @@ export default function ShopPage() {
     )
   );
 
-  // Get unique categories
+  // Get unique categories from products or use default categories
   const allCategories: string[] = Array.from(
-    new Set(categories?.flatMap((p) => p.name || []).filter(Boolean) || [])
+    new Set(products?.flatMap((p) => p.categories || []).filter(Boolean) || [])
   );
+
+  // If no categories found in products, use default categories
+  const displayCategories =
+    allCategories.length > 0 ? allCategories : Array.from(PRODUCT_CATEGORIES);
 
   // Filter products
   let filteredProducts: Product[] = (products || []).filter(
     (product: Product) => {
+      // Handle category filtering - support both string and array categories
+      const productCategories: string[] = [];
+      if (Array.isArray(product.categories)) {
+        productCategories.push(...product.categories);
+      } else if (product.categories) {
+        productCategories.push(product.categories);
+      }
+
       const matchesCategory =
         selectedCategories.length === 0 ||
-        selectedCategories.some((cat) =>
-          (product.categories || []).includes(cat)
-        );
+        selectedCategories.some((cat) => productCategories.includes(cat));
 
       const matchesBrand =
         selectedBrands.length === 0 ||
@@ -48,7 +59,8 @@ export default function ShopPage() {
 
       const matchesSearch =
         searchQuery === "" ||
-        product.name.toLowerCase().includes(searchQuery.toLowerCase());
+        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        product.description.toLowerCase().includes(searchQuery.toLowerCase());
 
       return matchesCategory && matchesBrand && matchesSearch;
     }
@@ -67,6 +79,21 @@ export default function ShopPage() {
         return 0;
     }
   });
+
+  // Get category counts for display
+  const getCategoryCount = (category: string): number => {
+    return (
+      products?.filter((product: Product) => {
+        const productCategories: string[] = [];
+        if (Array.isArray(product.categories)) {
+          productCategories.push(...product.categories);
+        } else if (product.categories) {
+          productCategories.push(product.categories);
+        }
+        return productCategories.includes(category);
+      }).length || 0
+    );
+  };
 
   // Pagination
   const totalPages = Math.ceil(filteredProducts.length / itemsPerPage);
@@ -95,6 +122,19 @@ export default function ShopPage() {
   };
 
   const handleSortChange = (sort: string) => setSortBy(sort);
+
+  const clearAllFilters = () => {
+    setSelectedCategories([]);
+    setSelectedBrands([]);
+    setSearchQuery("");
+    setSortBy("default");
+    setCurrentPage(1);
+  };
+
+  const hasActiveFilters =
+    selectedCategories.length > 0 ||
+    selectedBrands.length > 0 ||
+    searchQuery.length > 0;
 
   const getPaginationNumbers = () => {
     const numbers = [];
@@ -161,7 +201,7 @@ export default function ShopPage() {
               )}
 
               <div className="row mb-4">
-                <div className="col-md-12">
+                <div className="col-md-8">
                   <input
                     type="text"
                     placeholder="Search products..."
@@ -169,6 +209,17 @@ export default function ShopPage() {
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                   />
+                </div>
+                <div className="col-md-4">
+                  {hasActiveFilters && (
+                    <button
+                      className="btn btn-outline-secondary w-100"
+                      onClick={clearAllFilters}
+                    >
+                      <i className="fas fa-times me-2"></i>
+                      Clear Filters
+                    </button>
+                  )}
                 </div>
               </div>
 
@@ -220,7 +271,7 @@ export default function ShopPage() {
                                     All Categories
                                   </label>
                                 </div>
-                                {allCategories.map((category) => (
+                                {displayCategories.map((category) => (
                                   <div
                                     key={category}
                                     className="shop__widget-list-item"
@@ -242,7 +293,7 @@ export default function ShopPage() {
                                       htmlFor={`cat-${category}`}
                                       style={{ padding: "0 1rem" }}
                                     >
-                                      {category}
+                                      {category} ({getCategoryCount(category)})
                                     </label>
                                   </div>
                                 ))}
@@ -339,6 +390,34 @@ export default function ShopPage() {
                                 Showing {startIndex}–{endIndex} of{" "}
                                 {totalProducts} results
                               </p>
+                              {hasActiveFilters && (
+                                <div className="mt-2">
+                                  <small className="text-muted">
+                                    Active filters:
+                                    {selectedCategories.map((cat) => (
+                                      <span
+                                        key={cat}
+                                        className="badge bg-primary ms-1"
+                                      >
+                                        {cat} ×
+                                      </span>
+                                    ))}
+                                    {selectedBrands.map((brand) => (
+                                      <span
+                                        key={brand}
+                                        className="badge bg-success ms-1"
+                                      >
+                                        {brand} ×
+                                      </span>
+                                    ))}
+                                    {searchQuery && (
+                                      <span className="badge bg-info ms-1">
+                                        "{searchQuery}" ×
+                                      </span>
+                                    )}
+                                  </small>
+                                </div>
+                              )}
                             </div>
                           </div>
                         </div>

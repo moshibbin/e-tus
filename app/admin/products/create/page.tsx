@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Product, useAddProduct } from "@/app/hooks/useProducts";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import ImageUpload from "@/app/components/ImageUpload";
+import { PRODUCT_CATEGORIES } from "@/app/utils/constants";
 
 const CreateProduct: React.FC = () => {
   const router = useRouter();
@@ -31,17 +32,7 @@ const CreateProduct: React.FC = () => {
     router.push("/admin/products");
   };
 
-  const categories = [
-    "Cameras",
-    "Audio",
-    "Lighting",
-    "Accessories",
-    "Lenses",
-    "Tripods",
-    "Batteries",
-    "Storage",
-    "Other",
-  ];
+  const categories = PRODUCT_CATEGORIES;
 
   return (
     <div className="create-product">
