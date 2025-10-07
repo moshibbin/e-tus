@@ -46,8 +46,15 @@ const EditProduct: React.FC = () => {
           image: foundProduct.image,
           stock: foundProduct.stock,
           // Ensure images and thumbs arrays are available for the form
-          images: foundProduct.images && foundProduct.images.length > 0 ? foundProduct.images : [foundProduct.image],
-          thumbs: foundProduct.thumbs && foundProduct.thumbs.length > 0 ? foundProduct.thumbs : [foundProduct.image],
+          images:
+            foundProduct.images && foundProduct.images.length > 0
+              ? foundProduct.images
+              : [foundProduct.image],
+          thumbs:
+            foundProduct.thumbs && foundProduct.thumbs.length > 0
+              ? foundProduct.thumbs
+              : [foundProduct.image],
+          additionalInfo: foundProduct.additionalInfo || [],
         });
       } else {
         setIsInitialLoading(false);
@@ -65,8 +72,10 @@ const EditProduct: React.FC = () => {
         ...data,
         categories: product.categories || [],
         // Ensure images and thumbs arrays are populated with the main image
-        images: data.images && data.images.length > 0 ? data.images : [data.image],
-        thumbs: data.thumbs && data.thumbs.length > 0 ? data.thumbs : [data.image],
+        images:
+          data.images && data.images.length > 0 ? data.images : [data.image],
+        thumbs:
+          data.thumbs && data.thumbs.length > 0 ? data.thumbs : [data.image],
         tags: product.tags ?? [],
       },
     });
@@ -111,7 +120,8 @@ const EditProduct: React.FC = () => {
         </div>
         <div className="alert alert-danger" role="alert">
           <i className="fas fa-exclamation-triangle me-2"></i>
-          Product not found. The product you're trying to edit may have been deleted or doesn't exist.
+          Product not found. The product you're trying to edit may have been
+          deleted or doesn't exist.
         </div>
         <div className="text-center">
           <button
@@ -276,10 +286,12 @@ const EditProduct: React.FC = () => {
 
                 <ImageUpload
                   onImageUpload={(imageUrls) => {
-                    setValue('image', imageUrls[0] || '');
-                    setValue('images', imageUrls);
+                    setValue("image", imageUrls[0] || "");
+                    setValue("images", imageUrls);
                   }}
-                  currentImages={watch('images') || (watch('image') ? [watch('image')] : [])}
+                  currentImages={
+                    watch("images") || (watch("image") ? [watch("image")] : [])
+                  }
                   label="Product Images"
                   required={true}
                   maxImages={5}
@@ -289,6 +301,84 @@ const EditProduct: React.FC = () => {
                     <small>{errors.image.message}</small>
                   </div>
                 )}
+
+                <div className="mb-3">
+                  <label className="form-label">Additional Information</label>
+                  <div id="additional-info-container">
+                    {watch("additionalInfo")?.map(
+                      (info: { key: string; value: string }, index: number) => (
+                        <div
+                          key={index}
+                          className="row mb-2 additional-info-item"
+                        >
+                          <div className="col-md-5">
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="Information key (e.g., Weight, Dimensions)"
+                              value={info.key}
+                              onChange={(e) => {
+                                const newInfo = [
+                                  ...(watch("additionalInfo") || []),
+                                ];
+                                newInfo[index] = {
+                                  ...newInfo[index],
+                                  key: e.target.value,
+                                };
+                                setValue("additionalInfo", newInfo);
+                              }}
+                            />
+                          </div>
+                          <div className="col-md-5">
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="Information value (e.g., 2.5kg, 10x5x3cm)"
+                              value={info.value}
+                              onChange={(e) => {
+                                const newInfo = [
+                                  ...(watch("additionalInfo") || []),
+                                ];
+                                newInfo[index] = {
+                                  ...newInfo[index],
+                                  value: e.target.value,
+                                };
+                                setValue("additionalInfo", newInfo);
+                              }}
+                            />
+                          </div>
+                          <div className="col-md-2">
+                            <button
+                              type="button"
+                              className="btn btn-danger btn-sm w-100"
+                              onClick={() => {
+                                const newInfo = (
+                                  watch("additionalInfo") || []
+                                ).filter((_, i) => i !== index);
+                                setValue("additionalInfo", newInfo);
+                              }}
+                            >
+                              <i className="fas fa-trash"></i> Remove
+                            </button>
+                          </div>
+                        </div>
+                      )
+                    ) || []}
+                  </div>
+                  <button
+                    type="button"
+                    className="btn btn-outline-primary btn-sm"
+                    onClick={() => {
+                      const currentInfo = watch("additionalInfo") || [];
+                      setValue("additionalInfo", [
+                        ...currentInfo,
+                        { key: "", value: "" },
+                      ]);
+                    }}
+                  >
+                    <i className="fas fa-plus me-2"></i>Add Information Field
+                  </button>
+                </div>
 
                 <div className="d-grid gap-2 d-md-flex justify-content-md-end">
                   <button

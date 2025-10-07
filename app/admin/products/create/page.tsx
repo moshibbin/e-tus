@@ -22,8 +22,10 @@ const CreateProduct: React.FC = () => {
     // Ensure images and thumbs arrays are populated with the main image
     const productData = {
       ...data,
-      images: data.images && data.images.length > 0 ? data.images : [data.image],
-      thumbs: data.thumbs && data.thumbs.length > 0 ? data.thumbs : [data.image],
+      images:
+        data.images && data.images.length > 0 ? data.images : [data.image],
+      thumbs:
+        data.thumbs && data.thumbs.length > 0 ? data.thumbs : [data.image],
     };
     createProduct.mutate(productData);
     router.push("/admin/products");
@@ -191,10 +193,12 @@ const CreateProduct: React.FC = () => {
 
                 <ImageUpload
                   onImageUpload={(imageUrls) => {
-                    setValue('image', imageUrls[0] || '');
-                    setValue('images', imageUrls);
+                    setValue("image", imageUrls[0] || "");
+                    setValue("images", imageUrls);
                   }}
-                  currentImages={watch('images') || (watch('image') ? [watch('image')] : [])}
+                  currentImages={
+                    watch("images") || (watch("image") ? [watch("image")] : [])
+                  }
                   label="Product Images"
                   required={true}
                   maxImages={5}
@@ -204,6 +208,84 @@ const CreateProduct: React.FC = () => {
                     <small>{errors.image.message}</small>
                   </div>
                 )}
+
+                <div className="mb-3">
+                  <label className="form-label">Additional Information</label>
+                  <div id="additional-info-container">
+                    {watch("additionalInfo")?.map(
+                      (info: { key: string; value: string }, index: number) => (
+                        <div
+                          key={index}
+                          className="row mb-2 additional-info-item"
+                        >
+                          <div className="col-md-5">
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="Information key (e.g., Weight, Dimensions)"
+                              value={info.key}
+                              onChange={(e) => {
+                                const newInfo = [
+                                  ...(watch("additionalInfo") || []),
+                                ];
+                                newInfo[index] = {
+                                  ...newInfo[index],
+                                  key: e.target.value,
+                                };
+                                setValue("additionalInfo", newInfo);
+                              }}
+                            />
+                          </div>
+                          <div className="col-md-5">
+                            <input
+                              type="text"
+                              className="form-control"
+                              placeholder="Information value (e.g., 2.5kg, 10x5x3cm)"
+                              value={info.value}
+                              onChange={(e) => {
+                                const newInfo = [
+                                  ...(watch("additionalInfo") || []),
+                                ];
+                                newInfo[index] = {
+                                  ...newInfo[index],
+                                  value: e.target.value,
+                                };
+                                setValue("additionalInfo", newInfo);
+                              }}
+                            />
+                          </div>
+                          <div className="col-md-2">
+                            <button
+                              type="button"
+                              className="btn btn-danger btn-sm w-100"
+                              onClick={() => {
+                                const newInfo = (
+                                  watch("additionalInfo") || []
+                                ).filter((_, i) => i !== index);
+                                setValue("additionalInfo", newInfo);
+                              }}
+                            >
+                              <i className="fas fa-trash"></i> Remove
+                            </button>
+                          </div>
+                        </div>
+                      )
+                    ) || []}
+                  </div>
+                  <button
+                    type="button"
+                    className="btn btn-outline-primary btn-sm"
+                    onClick={() => {
+                      const currentInfo = watch("additionalInfo") || [];
+                      setValue("additionalInfo", [
+                        ...currentInfo,
+                        { key: "", value: "" },
+                      ]);
+                    }}
+                  >
+                    <i className="fas fa-plus me-2"></i>Add Information Field
+                  </button>
+                </div>
 
                 <div className="d-grid gap-2 d-md-flex justify-content-md-end">
                   <button

@@ -325,7 +325,10 @@ export default function ProductDetailsPage({
                   </div> */}
                 </div>
 
-                <p>{product.description}</p>
+                <div className="product__details-description mb-3">
+                  <h5 className="mb-2">Product Description</h5>
+                  <p className="mb-0">{product.description}</p>
+                </div>
 
                 <div className="product__details-price">
                   <span className="product__details-ammount new-ammount">
@@ -394,14 +397,11 @@ export default function ProductDetailsPage({
                 </div>
                 <div className="product__details-categories product__details-more">
                   <p>Categories:</p>
-                  {/* {product.categories?.map((cat: string, index: number) => (
-                    <span key={index}>
-                      <a href="#">
-                        {cat}
-                        {index < product.categories.length - 1 ? "," : ""}
-                      </a>
-                    </span>
-                  ))} */}
+                  <span className="badge ">
+                    {Array.isArray(product.categories)
+                      ? product.categories.join(", ")
+                      : product.categories || "Uncategorized"}
+                  </span>
                 </div>
                 <div className="product__details-tags">
                   <span>Tags:</span>
@@ -487,7 +487,7 @@ export default function ProductDetailsPage({
                   >
                     <div className="product__details-description product__details-review-inner mt-60">
                       <div className="product__details-description-content">
-                        <p className="mb-0">{product.fullDescription}</p>
+                        <p className="mb-0">{product.description}</p>
                       </div>
                     </div>
                   </div>
@@ -514,6 +514,91 @@ export default function ProductDetailsPage({
                       </div>
                     </div>
                   </div>
+                  <div
+                    className="tab-pane fade"
+                    id="nav-categories"
+                    role="tabpanel"
+                    aria-labelledby="nav-categories-tab"
+                  >
+                    <div className="product__details-categories-info">
+                      <div className="row">
+                        <div className="col-md-6">
+                          <h6>Product Categories</h6>
+                          <div className="mb-3">
+                            {Array.isArray(product.categories) ? (
+                              product.categories.map(
+                                (category: string, index: number) => (
+                                  <span
+                                    key={index}
+                                    className="badge bg-primary me-2 mb-2"
+                                  >
+                                    {category}
+                                  </span>
+                                )
+                              )
+                            ) : (
+                              <span className="badge bg-primary">
+                                {product.categories || "Uncategorized"}
+                              </span>
+                            )}
+                          </div>
+
+                          {product.tags && product.tags.length > 0 && (
+                            <>
+                              <h6>Tags</h6>
+                              <div>
+                                {product.tags.map(
+                                  (tag: string, index: number) => (
+                                    <span
+                                      key={index}
+                                      className="badge bg-secondary me-2 mb-2"
+                                    >
+                                      {tag}
+                                    </span>
+                                  )
+                                )}
+                              </div>
+                            </>
+                          )}
+                        </div>
+                        <div className="col-md-6">
+                          <h6>Product Details</h6>
+                          <table className="table table-sm">
+                            <tbody>
+                              <tr>
+                                <td>
+                                  <strong>SKU:</strong>
+                                </td>
+                                <td>{product.id}</td>
+                              </tr>
+                              <tr>
+                                <td>
+                                  <strong>Stock:</strong>
+                                </td>
+                                <td>{product.stock} units</td>
+                              </tr>
+                              {product.brand && (
+                                <tr>
+                                  <td>
+                                    <strong>Brand:</strong>
+                                  </td>
+                                  <td>{product.brand}</td>
+                                </tr>
+                              )}
+                              {product.size && (
+                                <tr>
+                                  <td>
+                                    <strong>Size:</strong>
+                                  </td>
+                                  <td>{product.size}</td>
+                                </tr>
+                              )}
+                            </tbody>
+                          </table>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
@@ -528,8 +613,23 @@ export default function ProductDetailsPage({
             {relatedProducts.map((relProduct: Product) => (
               <div key={relProduct.id} className="col-xl-3 col-md-6">
                 <div className="xc-product-eight__item">
-                  <div className="xc-product-eight__img">
-                    <img src={relProduct.image} alt={relProduct.name} />
+                  <div
+                    className="xc-product-eight__img"
+                    style={{
+                      height: "200px",
+                      width: "280px",
+                      background: "white",
+                    }}
+                  >
+                    <img
+                      src={relProduct.image}
+                      alt={relProduct.name}
+                      style={{
+                        height: "100%",
+                        width: "100%",
+                        objectFit: "contain",
+                      }}
+                    />
 
                     <div className="xc-product-eight__icons">
                       <button className="xc-product-eight__action">
