@@ -21,7 +21,7 @@ const FeaturedProducts = () => {
     );
   }
 
-  const featuredProducts = products?.slice(0, 4) || [];
+  const featuredProducts = products?.slice(4, 8) || [];
 
   return (
     <div className="xc-product-six pb-80">
@@ -46,12 +46,19 @@ const FeaturedProducts = () => {
                 <Link href={`/shop/${item.id}`}>
                   <div
                     className="xc-product-six__img"
-                    style={{ width: "100%" }}
+                    style={{
+                      width: "270px",
+                      height: "200px",
+                    }}
                   >
                     <img
                       src={item.image}
                       alt={item.name}
-                      style={{ width: "100%" }}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "contain",
+                      }}
                     />
                   </div>
                 </Link>

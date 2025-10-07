@@ -376,16 +376,25 @@ export default function ShopPage() {
                             className="col-xl-3 col-md-6 col-sm-6 infinite-item"
                           >
                             <div className="xc-product-two__item">
-                              <div className="xc-product-two__img">
-                                <img src={product.image} alt={product.name} />
+                              <div
+                                className="xc-product-two__img"
+                                style={{ height: "200px", width: "200px" }}
+                              >
+                                <img
+                                  src={product.image}
+                                  alt={product.name}
+                                  style={{
+                                    width: "100%",
+                                    height: "100%",
+                                    objectFit: "contain",
+                                  }}
+                                />
                               </div>
                               <div className="xc-product-two__ratting">
                                 {[...Array(5)].map((_, i) => (
                                   <i
                                     key={i}
-                                    className={`icon-star ${
-                                      i < Math.floor(0) ? "" : "text-muted"
-                                    }`}
+                                    className={`icon-star text-muted"`}
                                   />
                                 ))}
                               </div>

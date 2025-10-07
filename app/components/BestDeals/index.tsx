@@ -57,12 +57,19 @@ const BestDeals = () => {
                 <Link href={`/shop/${item.id}`}>
                   <div
                     className="xc-product-six__img"
-                    style={{ width: "100%" }}
+                    style={{
+                      width: "270px",
+                      height: "200px",
+                    }}
                   >
                     <img
                       src={item.image}
                       alt={item.name}
-                      style={{ width: "100%" }}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "contain",
+                      }}
                     />
                   </div>
                 </Link>
